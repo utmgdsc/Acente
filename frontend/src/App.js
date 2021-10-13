@@ -4,6 +4,7 @@ import { IntlProvider } from 'react-intl';
 import en from './languages/en.json';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Landing from './landing';
+import login from './login';
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
       <IntlProvider locale="en" messages = {en}>
       <BrowserRouter>
         <Switch>
-          <Route exact path="/" component={Landing} />
+          <Route exact path="/" component={login} />
         </Switch>
       </BrowserRouter>
       </IntlProvider>

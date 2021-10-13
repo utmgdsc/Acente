@@ -10,7 +10,7 @@ This is the backend logic for Acente
 
 ## Running the server
 
-The server can be ran by doing the following commands
+The server can be run by doing the following commands
 ```sh
 source venv/bin/activate
 flask run
