@@ -19,7 +19,7 @@ class Form extends Component {
                 <VStack height="100vh" position="relative" justifyContent="center">
                     <Flex direction="column" >
                         <FormControl id="username">
-                            <FormLabel mb="1px" >First name</FormLabel>
+                            <FormLabel mb="1px" >Username</FormLabel>
                             <Input placeholder="Username" borderWidth="2px"/>
                         </FormControl>
                         <FormControl id="email">
