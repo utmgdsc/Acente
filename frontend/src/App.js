@@ -13,7 +13,7 @@ function App() {
       <IntlProvider locale="en" messages = {en}>
       <BrowserRouter>
         <Switch>
-          <Route exact path="/" component={login} />
+          <Route exact path="/" component={Landing} />
         </Switch>
       </BrowserRouter>
       </IntlProvider>
