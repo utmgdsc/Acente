@@ -5,7 +5,7 @@ import Form from './Form.js'
 export class login extends Component {
     render() {
         return (
-                <Form value="Sign Up"/>
+            <Form value="Sign Up"/>
         )
     }
 }
