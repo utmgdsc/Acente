@@ -5,13 +5,7 @@ import Form from './Form.js'
 export class login extends Component {
     render() {
         return (
-            <div>
-                <div position="relative" justifyContent="center">
-                    <Flex direction="column">
-                        <Form value="Sign Up"/>
-                    </Flex>
-                </div>
-            </div>
+                <Form value="Sign Up"/>
         )
     }
 }
