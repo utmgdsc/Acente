@@ -13,11 +13,13 @@ import {
   } from "@chakra-ui/react"
 
 class Form extends Component {
+
     render() {
         return (
             <div>
                 <VStack height="100vh" position="relative" justifyContent="center">
-                    <Flex direction="column" >
+                    <Flex direction="column" position="relative" justifyContent="center">
+                        <Center fontSize="5xl" mb="10px">{this.props.value}</Center>
                         <FormControl id="username">
                             <FormLabel mb="1px" >Username</FormLabel>
                             <Input placeholder="Username" borderWidth="2px"/>

@@ -8,7 +8,7 @@ export class login extends Component {
             <div>
                 <div position="relative" justifyContent="center">
                     <Flex direction="column">
-                        <Form value="Login"/>
+                        <Form value="Sign Up"/>
                     </Flex>
                 </div>
             </div>
