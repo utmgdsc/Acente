@@ -15,6 +15,12 @@ function App() {
         <Switch>
           <Route exact path="/" component={login} />
         </Switch>
+        <Switch>
+          <Route exact path="/signup" component={signup} />
+        </Switch>
+        <Switch>
+          <Route exact path="/login" component={login} />
+        </Switch>
       </BrowserRouter>
       </IntlProvider>
 		</ChakraProvider>
