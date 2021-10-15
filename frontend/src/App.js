@@ -4,6 +4,8 @@ import { IntlProvider } from 'react-intl';
 import en from './languages/en.json';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Landing from './landing';
+import login from './login';
+import signup from './signup'
 
 function App() {
   return (
