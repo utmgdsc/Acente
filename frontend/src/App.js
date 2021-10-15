@@ -3,9 +3,9 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { IntlProvider } from 'react-intl';
 import en from './languages/en.json';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import Landing from './landing';
-import login from './login';
-import signup from './signup'
+import Landing from './views/landing';
+import login from './views/login';
+import signup from './views/signup';
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
       <IntlProvider locale="en" messages = {en}>
       <BrowserRouter>
         <Switch>
-          <Route exact path="/" component={login} />
+          <Route exact path="/" component={Landing} />
         </Switch>
         <Switch>
           <Route exact path="/signup" component={signup} />

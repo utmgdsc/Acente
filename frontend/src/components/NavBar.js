@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { useHistory } from 'react-router-dom';
 import {
-    Button, HStack, Heading
+    Button, HStack, IconButton, Img
   } from "@chakra-ui/react"
 
 
@@ -12,6 +12,10 @@ const NavBar = () => {
         history.push('/signup')
     } 
 
+    const handleMainPageClick = () => {
+        history.push('/')
+    }
+
     const handleLoginClick = () => {
         history.push('/login')
     }
@@ -19,10 +23,7 @@ const NavBar = () => {
     return (
         <HStack spacing="20px" backgroundColor="#9AE6B4" height="7vh" paddingRight="20px" paddingLeft="20px" width="100%">
             <HStack justifyContent="flex-start" width="50%">
-                {/* <Button>
-                    <Img src="../public/acenteIcon.png"/>
-                </Button> */}
-                <Heading as="h2" size="xl">Acente</Heading>
+                <IconButton colorScheme="green" onClick={handleMainPageClick} aria-label="Acente Logo" backgroundColor="#9AE6B4" icon={<Img maxWidth="100%" maxHeight="100%" src="AcenteIcon.png"/>}/>
             </HStack>
 
             <HStack justifyContent="flex-end" width="50%">
@@ -33,8 +34,6 @@ const NavBar = () => {
                     Sign Up
                 </Button>
             </HStack>
-            
-            
         </HStack>
     )
 }
