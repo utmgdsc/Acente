@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    Button, HStack, IconButton, Img, VStack, Heading, Box, Center, List, ListItem, ListIcon, OrderedList, UnorderedList
+    HStack, VStack, Box, Center, ListItem, UnorderedList
   } from "@chakra-ui/react"
 
 const Dashboard = () => {

@@ -6,7 +6,7 @@ import Dashboard from "../components/Dashboard";
 export const dashboard = () => {
     return (
         <div id="dashboard">
-            <NavBar />
+            <NavBar type="dashboardMenu"/>
             <Dashboard />
             <Footer />
         </div>

@@ -6,7 +6,7 @@ import { Box } from "@chakra-ui/react";
 
 const signup = () => (
   <Box id="signUpPage" backgroundImage="background.png">
-    <NavBar />
+    <NavBar type="loginMenu"/>
     <Form title="Sign Up" />
     <Footer />
   </Box>

@@ -7,7 +7,7 @@ import { Box } from '@chakra-ui/react';
 export const login = () => {
   return (
     <Box id="loginPage" backgroundImage="background.png">
-      <NavBar />
+      <NavBar type="loginMenu"/>
       <Form title="Login" />
       <Footer />
     </Box>
