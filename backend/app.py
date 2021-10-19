@@ -13,13 +13,13 @@ db = firebase.database()
 #Api route to get user data
 @app.route('/api/userinfo', methods=["POST"])
 def userinfo():
-    try:
-        if not request.form.get('uid', None):
-            return make_response(jsonify(message='Error invalid uid provided'), 400)
-        user = db.child("users").child(request.form['uid']).get()
-        return jsonify(uid=user.val(), values=user.key())
-    except:
-        return make_response(jsonify(message='Error cannot retrieve user information'), 400)
+    if (request.form.get('uid', None) and request.form.get('token', None)):
+        try:
+            user = db.child("users").child(request.form['uid']).get(request.form['token'])
+            return jsonify(uid={user.key():user.val()})
+        except:
+            pass
+    return make_response(jsonify(message='Error cannot retrieve user information'), 400) # invalid uid or token
 
 #Api route to sign up a new user
 @app.route('/api/signup', methods=["POST"])
@@ -30,27 +30,36 @@ def signup():
             "language": request.form.get('language', "English")
             }
     password = request.form.get('password')
-    if not (data["email"] and password):
-        return {'message': 'Error missing email or password'},400
+    if not (data['email'] and password):
+        return make_response(jsonify(message='Error missing email or password'), 400)
     try:
-        user = auth.create_user_with_email_and_password(email=data["email"], password=password)
-        db.child("users").child(user['localId']).set(data) #test set(data, 'localId' too
+        user = auth.create_user_with_email_and_password(email=data['email'], password=password)
+        db.child('users').child(user['localId']).set(data, user['idToken'])
         # auth.send_email_verification(user['idToken'])
-        return {'token': user["idToken"], 'uid':user["localId"]},200
+        return jsonify(user)
     except:
-        return {'message': 'Error creating user'},400
+        return make_response(jsonify(message='Error creating user'), 400)
 
 # Api to refresh user token (Note token expire every hour)
 @app.route('/api/login', methods=["POST"])
-@app.route('/api/token', methods=["POST"])
-def token():
+def login():
     email = request.form.get('email')
     password = request.form.get('password')
     try:
         user = auth.sign_in_with_email_and_password(email, password)
-        return {'token': user["idToken"], 'uid':user["localId"]},200
+        return jsonify(user)
     except:
-        return {'message': 'There was an error authenticating user.'},400
+        return make_response(jsonify(message='Error authenticating user'), 400)
 
+# take refresh token and get new token
+@app.route('/api/token', methods=["POST"])
+def token():
+    if request.form.get('refreshToken', None):
+        try:
+            return jsonify(auth.refresh(request.form['refreshToken']))
+        except:
+            pass
+    return make_response(jsonify(message='Error invalid refresh token'), 400)
+    
 if __name__ == '__main__':
     app.run(debug=True)
