@@ -62,4 +62,4 @@ def token():
     return make_response(jsonify(message='Error invalid refresh token'), 400)
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run() # add debug=True for dev
