@@ -38,6 +38,10 @@ const Form = ({title}) => (
           We'll (almost) never share your email.
         </FormHelperText>
       </FormControl>
+      <FormControl id="password">
+        <FormLabel mb="1px">Password</FormLabel>
+        <Input borderWidth="2px" />
+      </FormControl>
     </Flex>
     <Button colorScheme="gray">Submit</Button>
   </VStack>

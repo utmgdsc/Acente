@@ -5,6 +5,7 @@ import Form from '../components/Form';
 beforeEach(() => {
   render(<Form title="Test"/>)
 })
+
 test('renders Form correctly', () => {
   const TestTitle = screen.getByText("Test");
   expect(TestTitle).toBeInTheDocument();

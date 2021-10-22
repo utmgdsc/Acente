@@ -1,5 +1,5 @@
 import React from "react";
-import Footer from "../components/Footer";
+import Footer from "../components/Footer"; 
 import Form from "../components/Form";
 import NavBar from "../components/NavBar";
 import { Box } from '@chakra-ui/react';
