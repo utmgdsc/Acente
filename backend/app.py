@@ -29,7 +29,6 @@ def userinfo():
 
 #Api route to sign up a new user
 @app.route('/api/signup', methods=["POST"])
-@cross_origin()
 def signup():
     data = {
             "email":request.form.get('email'),

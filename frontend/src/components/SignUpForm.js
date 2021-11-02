@@ -25,11 +25,16 @@ const SignUpForm = () => {
   } = useForm();
 
   function onSubmit(values) {
-    console.log(values);
+    let bodyFormData = new FormData();
+    bodyFormData.append('name', values["name"]);
+    bodyFormData.append('language', values["language"]);
+    bodyFormData.append('email', values["email"]);
+    bodyFormData.append('password', values["password"]);
     axios({
       method: 'POST',
       url: 'http://127.0.0.1:5000/api/signup',
-      data: values
+      data: bodyFormData,
+      headers: { "Content-Type": "multipart/form-data" },
     })
     .then(function (response) {
       console.log(response);

@@ -23,18 +23,24 @@ const LoginForm = ({title}) => {
     register,
     formState: { errors, isSubmitting }
   } = useForm();
+  
 
   function onSubmit(values) {
+    let bodyFormData = new FormData();
+    bodyFormData.append('email', values["email"]);
+    bodyFormData.append('password', values["password"]);
     axios({
       method: 'POST',
       url: 'http://127.0.0.1:5000/api/login',
-      data: values
+      data: bodyFormData,
+      headers: { "Content-Type": "multipart/form-data" },
     })
     .then(function (response) {
       console.log(response);
     })
     .catch(function (error) {
       console.log(error);
+      setError('apiError', { message: error });
     });
   }
 
