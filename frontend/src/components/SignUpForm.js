@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -24,6 +24,8 @@ const SignUpForm = () => {
     formState: { errors, isSubmitting }
   } = useForm();
 
+  const [isSubmitError, changeSubmitError ] = useState('');
+
   function onSubmit(values) {
     let bodyFormData = new FormData();
     bodyFormData.append('name', values["name"]);
@@ -38,9 +40,13 @@ const SignUpForm = () => {
     })
     .then(function (response) {
       console.log(response);
+
+      //changeSubmitError('');
     })
     .catch(function (error) {
       console.log(error);
+
+      //changeSubmitError(error); // might be like too nerdy, "EMAIL OR PASSWORD WRONG"
     });
   }
 
