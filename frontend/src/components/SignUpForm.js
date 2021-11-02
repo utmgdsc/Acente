@@ -14,6 +14,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
+const axios = require('axios');
 
 const SignUpForm = () => {
   
@@ -24,11 +25,17 @@ const SignUpForm = () => {
   } = useForm();
 
   function onSubmit(values) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2));
-        resolve();
-      }, 3000);
+    console.log(values);
+    axios({
+      method: 'POST',
+      url: 'http://127.0.0.1:5000/api/signup',
+      data: values
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
     });
   }
 
@@ -44,9 +51,10 @@ const SignUpForm = () => {
               Sign Up
             </Center>
 
-            <FormControl id="username" isInvalid={errors.name}>
-              <FormLabel mb="1px">Username</FormLabel>
-              <Input 
+            <FormControl id="name" isInvalid={errors.name}>
+              <FormLabel mb="1px">Name</FormLabel>
+              <Input
+                name="name"
                 placeholder="JohnDoe" 
                 borderWidth="2px"
                 {...register("name", {
@@ -56,11 +64,25 @@ const SignUpForm = () => {
               {errors.name && errors.name.message}
             </FormErrorMessage>
             </FormControl>
+            <FormControl id="language" isInvalid={errors.language}>
+              <FormLabel mb="1px">Language</FormLabel>
+              <Input 
+                name="language"
+                placeholder="Klingon" 
+                borderWidth="2px"
+                {...register("language", {
+                  required: "This is required",
+              })}/>
+              <FormErrorMessage>
+              {errors.language && errors.language.message}
+            </FormErrorMessage>
+            </FormControl>
             <FormControl id="email" isInvalid={errors.email}>
               <FormLabel mb="1px" mt="8px">
                 Email address
               </FormLabel>
               <Input
+                name="email"
                 type="email"
                 borderWidth="2px"
                 placeholder="johndoe@fakeemail.com"
@@ -68,7 +90,7 @@ const SignUpForm = () => {
                   required: "This is required",
               })}/>
               <FormHelperText mt="1px">
-                We'll (almost) never share your email.
+                We'll never share your email.
               </FormHelperText>
               <FormErrorMessage>
               {errors.email && errors.email.message}

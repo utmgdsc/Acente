@@ -14,6 +14,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
+const axios = require('axios');
 
 const LoginForm = ({title}) => {
   
@@ -24,11 +25,16 @@ const LoginForm = ({title}) => {
   } = useForm();
 
   function onSubmit(values) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2));
-        resolve();
-      }, 3000);
+    axios({
+      method: 'POST',
+      url: 'http://127.0.0.1:5000/api/login',
+      data: values
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
     });
   }
 
@@ -48,6 +54,7 @@ const LoginForm = ({title}) => {
                 Email address
               </FormLabel>
               <Input
+                name="email"
                 type="email"
                 borderWidth="2px"
                 placeholder="johndoe@fakeemail.com"
@@ -55,7 +62,7 @@ const LoginForm = ({title}) => {
                   required: "This is required",
               })}/>
               <FormHelperText mt="1px">
-                We'll (almost) never share your email.
+                We'll never share your email.
               </FormHelperText>
               <FormErrorMessage>
               {errors.email && errors.email.message}
@@ -63,7 +70,9 @@ const LoginForm = ({title}) => {
             </FormControl>
             <FormControl id="password"isInvalid={errors.password}>
               <FormLabel mb="1px">Password</FormLabel>
-              <Input borderWidth="2px" 
+              <Input 
+                name="password"
+                borderWidth="2px" 
                 type="password"
                 {...register("password", {
                   required: "This is required",

@@ -1,9 +1,15 @@
 import pyrebase
 import json
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
+
 
 #App configuration
 app = Flask(__name__)
+
+# # #Enable CORs
+cors = CORS(app)
+
 #Connect to firebase
 firebase = pyrebase.initialize_app(json.load(open('secrets.json')))
 auth = firebase.auth()
@@ -23,6 +29,7 @@ def userinfo():
 
 #Api route to sign up a new user
 @app.route('/api/signup', methods=["POST"])
+@cross_origin()
 def signup():
     data = {
             "email":request.form.get('email'),
@@ -30,6 +37,8 @@ def signup():
             "language": request.form.get('language', "English")
             }
     password = request.form.get('password')
+    print("email is: " + str(data['email']))
+    print("password is: " + str(password))
     if not (data['email'] and password):
         return make_response(jsonify(message='Error missing email or password'), 400)
     try:
