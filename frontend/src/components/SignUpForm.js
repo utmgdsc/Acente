@@ -40,16 +40,13 @@ const SignUpForm = () => {
     })
     .then(function (response) {
       console.log(response);
-
-      //changeSubmitError('');
+      changeSubmitError('');
     })
     .catch(function (error) {
       console.log(error);
-
-      //changeSubmitError(error); // might be like too nerdy, "EMAIL OR PASSWORD WRONG"
+      changeSubmitError("It seems like you've already signed up. Try logging in!"); 
     });
   }
-
   return(
   <Box m="auto" width="25%">
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -61,7 +58,9 @@ const SignUpForm = () => {
             <Center fontSize="3xl" color="gray">
               Sign Up
             </Center>
-
+            <Center color="red.500">
+              {isSubmitError}
+            </Center>
             <FormControl id="name" isInvalid={errors.name}>
               <FormLabel mb="1px">Name</FormLabel>
               <Input

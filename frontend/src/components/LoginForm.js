@@ -1,4 +1,4 @@
-import React from "react";
+import {React, useState}from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -13,17 +13,19 @@ import {
   Button,
   Flex,
 } from "@chakra-ui/react";
+import { useHistory } from "react-router";
 
 const axios = require('axios');
 
 const LoginForm = ({title}) => {
-  
+  let history = useHistory();
+  const [isSubmitError, changeSubmitError] = useState('');
+
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting }
   } = useForm();
-  
 
   function onSubmit(values) {
     let bodyFormData = new FormData();
@@ -36,11 +38,17 @@ const LoginForm = ({title}) => {
       headers: { "Content-Type": "multipart/form-data" },
     })
     .then(function (response) {
+      if(response.status === 200){
+        localStorage.setItem('user_id', response.data['idToken']);
+        changeSubmitError('');
+      }
       console.log(response);
+      // history.push('/dashboard');
     })
+    // display popup
     .catch(function (error) {
       console.log(error);
-      setError('apiError', { message: error });
+      changeSubmitError('Invalid email or password');
     });
   }
 
@@ -54,6 +62,9 @@ const LoginForm = ({title}) => {
           </Center>
           <Center fontSize="3xl" color="gray">
             Login
+          </Center>
+          <Center color='red.500'>
+            {isSubmitError}
           </Center>
             <FormControl id="email" isInvalid={errors.email}>
               <FormLabel mb="1px" mt="8px">
