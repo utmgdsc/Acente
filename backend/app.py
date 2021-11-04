@@ -1,9 +1,15 @@
 import pyrebase
 import json
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
+
 
 #App configuration
 app = Flask(__name__)
+
+# # #Enable CORs
+cors = CORS(app)
+
 #Connect to firebase
 firebase = pyrebase.initialize_app(json.load(open('secrets.json')))
 auth = firebase.auth()
@@ -64,7 +70,7 @@ def signup():
             }
     password = request.form.get('password')
     if not (data['email'] and password):
-        return make_response(jsonify(message='Error missing email or password'), 400)
+        return make_response(jsonify(message=''), 400)
     try:
         user = auth.create_user_with_email_and_password(email=data['email'], password=password)
         db.child('users').child(user['localId']).set(data, user['idToken'])

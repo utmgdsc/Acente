@@ -1,4 +1,6 @@
 *env
 *.pyc
 *secrets.json
+lib/
+bin/
 *.json
