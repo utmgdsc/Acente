@@ -10,7 +10,7 @@ import { Router } from 'react-router-dom';
  */
 export const renderInRouter = (history) => (Comp) =>
   render(<Router history={history}>
-      <Comp />
+      <Comp type="loginMenu" />
     </Router>
   );
 

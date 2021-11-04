@@ -6,7 +6,7 @@ import SignUpForm from "../components/SignUpForm";
 
 const signup = () => (
   <Box id="signUpPage" backgroundImage="background.png">
-    <NavBar />
+    <NavBar type="loginMenu"/>
     <SignUpForm title="Sign Up" />
     <Footer />
   </Box>

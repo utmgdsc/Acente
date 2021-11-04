@@ -3,3 +3,4 @@
 *secrets.json
 lib/
 bin/
+*.json
