@@ -36,10 +36,8 @@ def signup():
             "language": request.form.get('language', "English")
             }
     password = request.form.get('password')
-    print("email is: " + str(data['email']))
-    print("password is: " + str(password))
     if not (data['email'] and password):
-        return make_response(jsonify(message='Error missing email or password'), 400)
+        return make_response(jsonify(message=''), 400)
     try:
         user = auth.create_user_with_email_and_password(email=data['email'], password=password)
         db.child('users').child(user['localId']).set(data, user['idToken'])
