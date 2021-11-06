@@ -38,7 +38,7 @@ def signup():
         # auth.send_email_verification(user['idToken'])
         return jsonify(user)
     except:
-        return make_response(jsonify(message='Error creating user'), 400)
+        return make_response(jsonify(message='Error creating user'), 401)
 
 # Api to refresh user token (Note token expire every hour)
 @app.route('/api/login', methods=["POST"])
@@ -49,7 +49,7 @@ def login():
         user = auth.sign_in_with_email_and_password(email, password)
         return jsonify(user)
     except:
-        return make_response(jsonify(message='Error authenticating user'), 400)
+        return make_response(jsonify(message='Error authenticating user'), 401)
 
 # take refresh token and get new token
 @app.route('/api/token', methods=["POST"])
@@ -59,7 +59,7 @@ def token():
             return jsonify(auth.refresh(request.form['refreshToken']))
         except:
             pass
-    return make_response(jsonify(message='Error invalid refresh token'), 400)
+    return make_response(jsonify(message='Error invalid refresh token'), 401)
     
 if __name__ == '__main__':
     app.run() # add debug=True for dev
