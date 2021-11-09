@@ -6,6 +6,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Landing from './views/landing';
 import login from './views/login';
 import signup from './views/signup';
+import dashboard from './views/dashboard'
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
         </Switch>
         <Switch>
           <Route exact path="/login" component={login} />
+        </Switch>
+        <Switch>
+          <Route exact path="/dashboard" component={dashboard} />
         </Switch>
       </BrowserRouter>
       </IntlProvider>

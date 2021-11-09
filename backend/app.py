@@ -1,14 +1,53 @@
 import pyrebase
 import json
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
+
 
 #App configuration
 app = Flask(__name__)
+
+# # #Enable CORs
+cors = CORS(app)
+
 #Connect to firebase
 firebase = pyrebase.initialize_app(json.load(open('secrets.json')))
 auth = firebase.auth()
 # Authenticate Firebase tables
 db = firebase.database()
+from flask_cors import CORS, cross_origin
+import base64
+import os
+from google.cloud import speech_v1p1beta1 as speech
+
+cors = CORS(app)
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "../service-account-key.json" # service key required to access google cloud services
+speech_client = speech.SpeechClient() 
+
+
+
+@app.route("/messages", methods = ["POST"])
+@cross_origin()
+def user():
+    byte_data = base64.b64decode(request.json['message'])
+    audio_mp3 = speech.RecognitionAudio(content=byte_data)
+    config_mp3 = speech.RecognitionConfig(
+    encoding='MP3',
+    sample_rate_hertz= 16000,
+    enable_automatic_punctuation=True,
+    language_code='en-US',
+    enable_word_confidence=True
+    )
+
+    # Transcribing the audio into text
+    response = speech_client.recognize(
+        config=config_mp3,
+        audio=audio_mp3
+    )
+
+    print(response)
+    return {}
+
 
 #Api route to get user data
 @app.route('/api/userinfo', methods=["POST"])
@@ -31,7 +70,7 @@ def signup():
             }
     password = request.form.get('password')
     if not (data['email'] and password):
-        return make_response(jsonify(message='Error missing email or password'), 400)
+        return make_response(jsonify(message=''), 400)
     try:
         user = auth.create_user_with_email_and_password(email=data['email'], password=password)
         db.child('users').child(user['localId']).set(data, user['idToken'])
