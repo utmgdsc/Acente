@@ -75,12 +75,7 @@ def user():
         for pair in result.alternatives[0].words:
             words.append(pair.word.lower().replace(".", ""))
             confidence.append(pair.confidence)
-    print(response)
-    print(words)
-    print(confidence)
-    arr1, arr2 = parseGCPOutput("i love love", words, confidence)
-    print(arr1)
-    print(arr2)
+    arr1, arr2 = parseGCPOutput("peter piper picked pickled peppers", words, confidence)
     return {}
 
 
