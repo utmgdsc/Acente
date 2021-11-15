@@ -20,21 +20,33 @@ import {GiNotebook} from "react-icons/gi"
 import {CgProfile} from "react-icons/cg"
 import {BiLogOut} from "react-icons/bi"
 import {HiMicrophone} from "react-icons/hi"
-
+const axios = require('axios');
 
 const NavBar = ({type}) => {
     let history = useHistory();
 
     const handleSignUpClick = () => {  
-        history.push('/signup')
+        history.push('/signup');
     } 
 
     const handleMainPageClick = () => {
-        history.push('/')
+        history.push('/');
     }
 
     const handleLoginClick = () => {
-        history.push('/login')
+        history.push('/login');
+    }
+    const handleLogoutClick = () => {
+        if (localStorage.getItem('uid')){
+            axios({
+                method: 'POST',
+                url: 'http://127.0.0.1:5000/api/logout'
+              });
+            localStorage.removeItem('uid');
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+        }
+        history.push('/login');
     }
         
     if (type === "loginMenu") {
@@ -83,7 +95,7 @@ const NavBar = ({type}) => {
                             Sandbox
                             </MenuItem>
                             <MenuDivider/>
-                            <MenuItem minHeight="13vh" icon={<BiLogOut />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}}>
+                            <MenuItem minHeight="13vh" icon={<BiLogOut />} onClick={handleLogoutClick} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}}>
                             Logout
                             </MenuItem>
                             <MenuDivider/>
