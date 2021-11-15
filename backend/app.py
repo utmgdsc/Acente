@@ -113,4 +113,4 @@ def logout():
     return make_response(jsonify(message='Error cannot log out current user'), 400)
 
 if __name__ == '__main__':
-    app.run(debug=True) # add debug=True for dev
+    app.run() # add debug=True for dev
