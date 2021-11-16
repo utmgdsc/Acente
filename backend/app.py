@@ -21,7 +21,7 @@ import os
 from google.cloud import speech_v1p1beta1 as speech
 
 cors = CORS(app)
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "../service-account-key.json" # service key required to access google cloud services
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json" # service key required to access google cloud services
 speech_client = speech.SpeechClient() 
 
 

@@ -103,27 +103,27 @@
         };
       });
 
-      const populateAudioMessages = () => {
-        return fetch('/messages').then(res => {
-          if (res.status === 200) {
-            return res.json().then(json => {
-              json.messageFilenames.forEach(filename => {
-                let audioElement = document.querySelector(`[data-audio-filename="${filename}"]`);
-                if (!audioElement) {
-                  audioElement = document.createElement('audio');
-                  audioElement.src = `/messages/${filename}`;
-                  audioElement.setAttribute('data-audio-filename', filename);
-                  audioElement.setAttribute('controls', true);
-                  savedAudioMessagesContainer.appendChild(audioElement);
-                }
-              });
-            });
-          }
-          console.log('Invalid status getting messages: ' + res.status);
-        });
-      };
+      // const populateAudioMessages = () => {
+      //   return fetch('/messages').then(res => {
+      //     if (res.status === 200) {
+      //       return res.json().then(json => {
+      //         json.messageFilenames.forEach(filename => {
+      //           let audioElement = document.querySelector(`[data-audio-filename="${filename}"]`);
+      //           if (!audioElement) {
+      //             audioElement = document.createElement('audio');
+      //             audioElement.src = `/messages/${filename}`;
+      //             audioElement.setAttribute('data-audio-filename', filename);
+      //             audioElement.setAttribute('controls', true);
+      //             savedAudioMessagesContainer.appendChild(audioElement);
+      //           }
+      //         });
+      //       });
+      //     }
+      //     console.log('Invalid status getting messages: ' + res.status);
+      //   });
+      // };
 
-      populateAudioMessages();
+      // populateAudioMessages();
     </script>
   </body>
 </html>
