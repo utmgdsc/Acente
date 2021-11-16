@@ -109,7 +109,7 @@ cred = credentials.Certificate('fireStoreKey.json')
 firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
-# store sentences in a list and shuffle it
+# create shuffled list of sentences
 ls, index = [], 0
 sentences_ref = firestore_db.collection(u'sentences').stream()
 for sentence in sentences_ref:
