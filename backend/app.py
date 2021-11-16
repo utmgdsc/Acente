@@ -120,8 +120,8 @@ random.shuffle(ls)
 def random_sentence_generator():
     """ Returns a senctence from shuffled list of sentences
     """
+    global index
     try:
-        # reiterate if index reaches end of list
         if index >= len(ls):
             index = 0
         sentence = jsonify(ls[index].get(u'sentence'))
