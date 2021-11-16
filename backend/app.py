@@ -111,8 +111,8 @@ firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
 # grabs sentences at random
-@app.route('/api/sentenceGrabber', methods=["GET"])
-def sentence_grabber():
+@app.route('/api/randomSentenceGenerator', methods=["GET"])
+def random_sentence_generator():
     print("running1")
     ls = []
     sentences_ref = firestore_db.collection(u'sentences').stream()
