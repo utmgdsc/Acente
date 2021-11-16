@@ -2,7 +2,7 @@ import pyrebase
 import json
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-
+import random
 
 #App configuration
 app = Flask(__name__)
@@ -15,16 +15,15 @@ firebase = pyrebase.initialize_app(json.load(open('secrets.json')))
 auth = firebase.auth()
 # Authenticate Firebase tables
 db = firebase.database()
+
 from flask_cors import CORS, cross_origin
 import base64
 import os
 from google.cloud import speech_v1p1beta1 as speech
 
 cors = CORS(app)
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "../service-account-key.json" # service key required to access google cloud services
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json" # service key required to access google cloud services
 speech_client = speech.SpeechClient() 
-
-
 
 @app.route("/messages", methods = ["POST"])
 @cross_origin()
@@ -99,6 +98,31 @@ def token():
         except:
             pass
     return make_response(jsonify(message='Error invalid refresh token'), 400)
+
+# Firestore Setup
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+# Use a service account
+cred = credentials.Certificate('fireStoreKey.json')
+firebase_admin.initialize_app(cred)
+
+firestore_db = firestore.client()
+
+# grabs sentences at random
+@app.route('/api/sentenceGrabber', methods=["GET"])
+def sentence_grabber():
+    print("running1")
+    ls = []
+    sentences_ref = firestore_db.collection(u'sentences').stream()
+    try:
+        for sentence in sentences_ref:
+            ls.append(sentence)
+        index = random.randint(0,len(ls) - 1)
+        return jsonify(ls[index].get(u'sentence'))
+    except:
+        return make_response(jsonify(message='Cannot fetch a sentence'), 400)
     
 if __name__ == '__main__':
     app.run() # add debug=True for dev
