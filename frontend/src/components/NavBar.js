@@ -1,21 +1,21 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom';
 import {
-    Button, 
-    HStack, 
-    IconButton, 
-    Img, 
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuDivider,
-  } from "@chakra-ui/react"
-
-import { 
-    HamburgerIcon,
+   Button,
+   HStack,
+   IconButton,
+   Img,
+   Menu,
+   MenuButton,
+   MenuList,
+   MenuItem,
+   MenuDivider,
+ } from "@chakra-ui/react"
+ 
+import {
+   HamburgerIcon,
 } from '@chakra-ui/icons'
-
+ 
 import {GiNotebook} from "react-icons/gi"
 import {CgProfile} from "react-icons/cg"
 import {BiLogOut} from "react-icons/bi"
@@ -36,6 +36,15 @@ const NavBar = ({type}) => {
     const handleLoginClick = () => {
         history.push('/login');
     }
+
+    const handlePracticeClick = () => {
+        history.push('/practice')
+    }
+
+    const handleProfileClick = () => {
+        history.push('/dashboard')
+    }
+
     const handleLogoutClick = () => {
         if (localStorage.getItem('uid')){
             axios({
@@ -83,11 +92,11 @@ const NavBar = ({type}) => {
                             variant="outline"
                         />
                         <MenuList minHeight="100vh" minWidth="35vh" right="-60px" position="absolute" top="-57px" backgroundColor="#2D3748">
-                            <MenuItem minHeight="13vh" icon={<CgProfile />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}}>
+                            <MenuItem minHeight="13vh" icon={<CgProfile />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handleProfileClick}>
                                 Profile
                             </MenuItem>
                             <MenuDivider/>
-                            <MenuItem minHeight="13vh" icon={<HiMicrophone />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}}>
+                            <MenuItem minHeight="13vh" icon={<HiMicrophone />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handlePracticeClick}>
                             Practice
                             </MenuItem>
                             <MenuDivider/>
@@ -95,7 +104,7 @@ const NavBar = ({type}) => {
                             Sandbox
                             </MenuItem>
                             <MenuDivider/>
-                            <MenuItem minHeight="13vh" icon={<BiLogOut />} onClick={handleLogoutClick} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}}>
+                            <MenuItem minHeight="13vh" icon={<BiLogOut />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handleLogoutClick}>
                             Logout
                             </MenuItem>
                             <MenuDivider/>
@@ -109,5 +118,5 @@ const NavBar = ({type}) => {
         )
     }
 }
-
+ 
 export default NavBar;

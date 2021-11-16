@@ -22,10 +22,38 @@ from flask_cors import CORS, cross_origin
 import base64
 import os
 from google.cloud import speech_v1p1beta1 as speech
+PERFECT = 0
+ALMOST_THERE = 1
+POOR = 2
 
 cors = CORS(app)
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "../service-account-key.json" # service key required to access google cloud services
-speechclient = speech.SpeechClient() 
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json" # service key required to access google cloud services
+speech_client = speech.SpeechClient() 
+
+# The confidence of word at index i in gcp_output_words is located at index i in gcp_output_confidence
+def parseGCPOutput(sentence, gcp_output_words, gcp_output_confidence):
+    sentence_arr = sentence.lower().split(" ")
+    confidence_arr = []
+    confidence_levels = []
+    print(sentence)
+    index = 0
+    for word in sentence_arr:
+        if word in gcp_output_words:
+            index = gcp_output_words.index(word, index)
+            confidence_arr.append(gcp_output_confidence[index])
+            if gcp_output_confidence[index] >= 0.97:
+                confidence_levels.append(PERFECT)
+            elif gcp_output_confidence[index] >= 0.90:
+                confidence_levels.append(ALMOST_THERE)
+            else:
+                confidence_levels.append(POOR)
+            index += 1
+        else:
+            confidence_arr.append(0)
+            confidence_levels.append(POOR)
+    
+    return confidence_arr, confidence_levels
+
 @app.route("/messages", methods = ["POST"])
 @cross_origin()
 def user():
@@ -44,8 +72,13 @@ def user():
         config=config_mp3,
         audio=audio_mp3
     )
-
-    print(response)
+    words = []
+    confidence = []
+    for result in response.results:
+        for pair in result.alternatives[0].words:
+            words.append(pair.word.lower().replace(".", ""))
+            confidence.append(pair.confidence)
+    arr1, arr2 = parseGCPOutput("peter piper picked pickled peppers", words, confidence)
     return {}
 #Api route to get user data
 @app.route('/api/userinfo', methods=["POST"])
