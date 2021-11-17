@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useHistory } from 'react-router-dom';
 
 import {
   FormErrorMessage,
@@ -17,7 +18,7 @@ import {
 const axios = require('axios');
 
 const SignUpForm = () => {
-  
+  let history = useHistory();
   const {
     handleSubmit,
     register,
@@ -39,11 +40,17 @@ const SignUpForm = () => {
       headers: { "Content-Type": "multipart/form-data" },
     })
     .then(function (response) {
-      console.log(response);
-      changeSubmitError('');
+      if(response.status === 200){
+        localStorage.setItem('token', response.data['idToken']);
+        localStorage.setItem('uid', response.data['localId']);
+        localStorage.setItem('refreshToken', response.data['refreshToken']);
+        changeSubmitError('');
+        history.push('/dashboard');
+      }
+      changeSubmitError("It seems like you've already signed up. Try logging in!");
     })
     .catch(function (error) {
-      console.log(error);
+      console.log(error); // TODO: remove console.log for all prod code
       changeSubmitError("It seems like you've already signed up. Try logging in!"); 
     });
   }

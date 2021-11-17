@@ -1,11 +1,14 @@
 import pyrebase
 import json
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, session
 from flask_cors import CORS
-
+from flask_session import Session
 
 #App configuration
 app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 # # #Enable CORs
 cors = CORS(app)
@@ -77,13 +80,12 @@ def user():
             confidence.append(pair.confidence)
     arr1, arr2 = parseGCPOutput("peter piper picked pickled peppers", words, confidence)
     return {}
-
-
 #Api route to get user data
 @app.route('/api/userinfo', methods=["POST"])
 def userinfo():
     if (request.form.get('uid', None) and request.form.get('token', None)):
         try:
+            auth.current_user = session.get("email", auth.current_user)
             user = db.child("users").child(request.form['uid']).get(request.form['token'])
             return jsonify(uid={user.key():user.val()})
         except:
@@ -100,14 +102,15 @@ def signup():
             }
     password = request.form.get('password')
     if not (data['email'] and password):
-        return make_response(jsonify(message=''), 400)
+        return make_response(jsonify(message='Error missing required user information'), 400)
     try:
         user = auth.create_user_with_email_and_password(email=data['email'], password=password)
         db.child('users').child(user['localId']).set(data, user['idToken'])
+        session["email"] = user
         # auth.send_email_verification(user['idToken'])
         return jsonify(user)
     except:
-        return make_response(jsonify(message='Error creating user'), 400)
+        return make_response(jsonify(message='Error creating user'), 401)
 
 # Api to refresh user token (Note token expire every hour)
 @app.route('/api/login', methods=["POST"])
@@ -116,19 +119,31 @@ def login():
     password = request.form.get('password')
     try:
         user = auth.sign_in_with_email_and_password(email, password)
+        session["email"] = user
         return jsonify(user)
     except:
-        return make_response(jsonify(message='Error authenticating user'), 400)
+        return make_response(jsonify(message='Error authenticating user'), 401)
 
 # take refresh token and get new token
 @app.route('/api/token', methods=["POST"])
 def token():
     if request.form.get('refreshToken', None):
-        try:
-            return jsonify(auth.refresh(request.form['refreshToken']))
+        try: # Review sign_in_with_custom_token(self, token) function
+            auth.current_user = session.setdefault("email", auth.current_user)
+            user = auth.refresh(request.form['refreshToken'])
+            session["email"].update(user)
+            return jsonify(user)
         except:
             pass
-    return make_response(jsonify(message='Error invalid refresh token'), 400)
-    
+    return make_response(jsonify(message='Error invalid refresh token'), 401)
+
+@app.route('/api/logout', methods=["POST"])
+def logout():
+    if session.get("email"):
+        session.pop("email", None)
+        auth.current_user = None
+        return jsonify("Logged out user successfully")
+    return make_response(jsonify(message='Error cannot log out current user'), 400)
+
 if __name__ == '__main__':
     app.run() # add debug=True for dev
