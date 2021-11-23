@@ -1,10 +1,12 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {
    HStack, VStack, Box, Center, Icon, Button
  } from "@chakra-ui/react"
  
 import {HiMicrophone} from "react-icons/hi"
 import {BsFillStopFill} from "react-icons/bs"
+
+const axios = require('axios');
 
 let recorder;
 let audio;
@@ -48,6 +50,19 @@ const recordAudio = () =>
  
 const Test = () => {
     const [disableRecordBtn, setDisableRecordBtn] = useState(false);
+    const [sentence, setSentence] = useState({sentence:"", id: "0"});
+    
+    useEffect(() => {
+        axios({
+            method: 'GET',
+            url: 'http://127.0.0.1:5000/api/randomSentenceGenerator',
+          })
+          .then(function (response) {
+            if (response.status === 200) {
+                setSentence(response.data);
+            }
+          })
+    }, []);
 
     
     const sleep = time => new Promise(resolve => setTimeout(resolve, time));
@@ -83,7 +98,7 @@ const Test = () => {
         console.log(audio);
         console.log(recorder);
         console.log(recorder[0]);
-        handlePlayButtonClick();
+        handleSaveButtonClick();
         setDisableRecordBtn(false);
     }
 
@@ -99,7 +114,7 @@ const Test = () => {
         fetch('http://127.0.0.1:5000/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: base64AudioMessage })
+            body: JSON.stringify({ message: base64AudioMessage, ...sentence})
         }).then(res => {
             if (res.status === 201) {
             // return populateAudioMessages();
@@ -113,11 +128,11 @@ const Test = () => {
        <HStack height="86vh" justifyContent="center" spacing="20px" padding="50px">
            <VStack height="100%" width="70%" spacing="20px">
                <Box height="50%" width="100%" backgroundColor="#EDF2F7" borderRadius="3xl" padding="20px">
-                   <Center color="gray" fontWeight="light" fontSize="3xl" justifyContent="left"> I can't believe it's not butter! </Center>
-                   <Button borderRadius="full" height="70px" width="70px" top="100px" left="720px" backgroundColor="#CBD5E0" style={{display: disableRecordBtn ? "none" : "block"}} onClick={handleRecordButtonClick}>
+                   <Center color="gray" fontWeight="light" fontSize="3xl" justifyContent="left"> {sentence.sentence} </Center>
+                   <Button borderRadius="full" height="70px" width="70px" top="100px" left="800px" backgroundColor="#CBD5E0" style={{display: disableRecordBtn ? "none" : "block"}} onClick={handleRecordButtonClick}>
                        <Icon w={8} h={8} as={HiMicrophone} color="black" />
                     </Button>
-                    <Button borderRadius="full" height="70px" width="70px" top="100px" left="740px" backgroundColor="#CBD5E0" style={{display: disableRecordBtn ? "block" : "none"}} onClick={handleStopButtonClick}>
+                    <Button borderRadius="full" height="70px" width="70px" top="100px" left="800px" backgroundColor="#CBD5E0" style={{display: disableRecordBtn ? "block" : "none"}} onClick={handleStopButtonClick}>
                         <Icon w={8} h={8} as={BsFillStopFill} color="black" />
                     </Button>
 
