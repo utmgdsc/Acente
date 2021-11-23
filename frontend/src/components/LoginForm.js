@@ -1,5 +1,6 @@
 import {React, useState}from "react";
 import { useForm } from "react-hook-form";
+import { useHistory } from 'react-router-dom';
 
 import {
   FormErrorMessage,
@@ -13,7 +14,6 @@ import {
   Button,
   Flex,
 } from "@chakra-ui/react";
-import { useHistory } from "react-router";
 
 const axios = require('axios');
 
@@ -39,15 +39,17 @@ const LoginForm = ({title}) => {
     })
     .then(function (response) {
       if(response.status === 200){
-        localStorage.setItem('user_id', response.data['idToken']);
+        localStorage.setItem('token', response.data['idToken']);
+        localStorage.setItem('uid', response.data['localId']);
+        localStorage.setItem('refreshToken', response.data['refreshToken']);
         changeSubmitError('');
+        history.push('/dashboard');
       }
-      console.log(response);
-      // history.push('/dashboard');
+      changeSubmitError('Invalid email or password');
     })
     // display popup
     .catch(function (error) {
-      console.log(error);
+      console.log(error); // TODO: remove console.log for all prod code
       changeSubmitError('Invalid email or password');
     });
   }
