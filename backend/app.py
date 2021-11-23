@@ -149,24 +149,21 @@ cred = credentials.Certificate('fireStoreKey.json')
 firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
-# create shuffled list of sentences
-ls, index = [], 0
+# create dict of sentences
+ls = {}
 sentences_ref = firestore_db.collection(u'sentences').stream()
 for sentence in sentences_ref:
-    ls.append(sentence)
-random.shuffle(ls)
+    dt = sentence.to_dict()
+    dt['id'] = sentence.id
+    ls[sentence.id] = dt
 
 @app.route('/api/randomSentenceGenerator', methods=["GET"])
 def random_sentence_generator():
-    """ Returns a senctence from shuffled list of sentences
+    """ Returns a random senctence from collection of sentences
     """
-    global index
     try:
-        if index >= len(ls):
-            index = 0
-        sentence = jsonify(sentence=ls[index].get(u'sentence'))
-        index += 1
-        return sentence
+        sentence = random.choice(list(ls))
+        return jsonify(sentence=ls[sentence])
     except:
         return make_response(jsonify(message='Cannot fetch a sentence'), 400)
 
