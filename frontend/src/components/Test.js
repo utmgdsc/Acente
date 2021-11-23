@@ -1,12 +1,15 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {
-   HStack, VStack, Box, Center, ListItem, UnorderedList, IconButton, Icon, Button
+   HStack, VStack, Box, Center, Icon, Button
  } from "@chakra-ui/react"
  
 import {HiMicrophone} from "react-icons/hi"
- 
-const Test = () => {
-    const recordAudio = () =>
+import {BsFillStopFill} from "react-icons/bs"
+
+let recorder;
+let audio;
+
+const recordAudio = () =>
         new Promise(async resolve => {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const mediaRecorder = new MediaRecorder(stream);
@@ -17,57 +20,71 @@ const Test = () => {
         });
 
         const start = () => {
-            console.log("inside start");
             audioChunks = [];
             mediaRecorder.start();
         };
 
         const stop = () => {
             console.log("inside stop");
-            new Promise(resolve => {
-            mediaRecorder.addEventListener('stop', () => {
-                const audioBlob = new Blob(audioChunks, { 'type': 'audio/mp3' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
-                const play = () => audio.play();
-                resolve({ audioChunks, audioBlob, audioUrl, play });
-            });
+            const promise = new Promise(resolve => {
+                mediaRecorder.addEventListener('stop', () => {
+                    console.log("inside mediaRecorder");
+                    const audioBlob = new Blob(audioChunks, { 'type': 'audio/mp3' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    const play = () => audio.play();
+                    resolve({ audioChunks, audioBlob, audioUrl, play });
+                });
 
-            mediaRecorder.stop();
-            });
+                mediaRecorder.stop();
+            }); 
+
+            return promise; 
         }
 
         resolve({ start, stop });
     });
 
+ 
+const Test = () => {
+    const [disableRecordBtn, setDisableRecordBtn] = useState(false);
+
+    
     const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
-    // const recordButton = document.getElementById("record");
-    // const stopButton = document.getElementById("stop");
-    // const playButton = document.getElementById("play");
-    // const saveButton = document.getElementById("save");
-
-    let recorder;
-    let audio;
+    // const handleRecordClick = async () => {
+    //     if (showRecordingButton == 0) {
+    //         setshowRecordingButton(1);
+    //         if (!recorder) {
+    //             recorder = await recordAudio();
+    //         }
+    //         recorder.start();
+    //     }
+    //     else {
+    //         setshowRecordingButton(0);
+    //         audio = await recorder.stop();
+    //     }
+    // }
 
     const handleRecordButtonClick = async () => {
-        // recordButton.setAttribute('disabled', true);
-        // stopButton.removeAttribute('disabled');
-        // playButton.setAttribute('disabled', true);
-        // saveButton.setAttribute('disabled', true);
-        console.log("inside handle record");
         if (!recorder) {
+            console.log("hellos");
             recorder = await recordAudio();
         }
         recorder.start();
+        console.log(recorder);
+        setDisableRecordBtn(true);
     }
 
     const handleStopButtonClick = async () => {
-        // recordButton.removeAttribute('disabled');
-        // stopButton.setAttribute('disabled', true);
-        // playButton.removeAttribute('disabled');
-        // saveButton.removeAttribute('disabled');
-        audio = recorder.stop();
+        console.log(recorder)
+        console.log("inside handlestopbuttonclick");
+        audio = await recorder.stop();
+        console.log(audio);
+        console.log(recorder);
+        console.log(recorder[0]);
+        handlePlayButtonClick();
+        setDisableRecordBtn(false);
     }
 
     const handlePlayButtonClick = () => {
@@ -91,19 +108,23 @@ const Test = () => {
         });
         };
     }
- 
+
    return (
        <HStack height="86vh" justifyContent="center" spacing="20px" padding="50px">
            <VStack height="100%" width="70%" spacing="20px">
                <Box height="50%" width="100%" backgroundColor="#EDF2F7" borderRadius="3xl" padding="20px">
                    <Center color="gray" fontWeight="light" fontSize="3xl" justifyContent="left"> I can't believe it's not butter! </Center>
-                   {/* <Button borderRadius="full" height="70px" width="70px" top="100px" left="800px" backgroundColor="#CBD5E0" onClick={handleMicrophoneClick}>
-                       <Icon w={8} h={8} as={HiMicrophone}color="black" />
-                   </Button> */}
-                    <button id="record" onClick={handleRecordButtonClick}>Record</button>
+                   <Button borderRadius="full" height="70px" width="70px" top="100px" left="720px" backgroundColor="#CBD5E0" style={{display: disableRecordBtn ? "none" : "block"}} onClick={handleRecordButtonClick}>
+                       <Icon w={8} h={8} as={HiMicrophone} color="black" />
+                    </Button>
+                    <Button borderRadius="full" height="70px" width="70px" top="100px" left="740px" backgroundColor="#CBD5E0" style={{display: disableRecordBtn ? "block" : "none"}} onClick={handleStopButtonClick}>
+                        <Icon w={8} h={8} as={BsFillStopFill} color="black" />
+                    </Button>
+
+                    {/* <button id="record" onClick={handleRecordButtonClick}>Record</button>
                     <button id="stop" onClick={handleStopButtonClick}>Stop</button>
                     <button id="play" onClick={handlePlayButtonClick}>Play</button>
-                    <button id="save" onClick={handleSaveButtonClick}>Save</button>
+                    <button id="save" onClick={handleSaveButtonClick}>Save</button> */}
                </Box>
                <Box height="50%" width="100%" backgroundColor="#EDF2F7" borderRadius="3xl" padding="20px">
                    <Center color="gray" fontWeight="light" fontSize="3xl" justifyContent="left"> I can't believe it's not butter! </Center>
