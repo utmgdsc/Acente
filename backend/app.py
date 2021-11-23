@@ -124,7 +124,7 @@ def random_sentence_generator():
     try:
         if index >= len(ls):
             index = 0
-        sentence = jsonify(ls[index].get(u'sentence'))
+        sentence = jsonify(sentence=ls[index].get(u'sentence'))
         index += 1
         return sentence
     except:
