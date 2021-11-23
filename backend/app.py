@@ -2,6 +2,7 @@ import pyrebase
 import json
 from flask import Flask, request, jsonify, make_response, session
 from flask_cors import CORS
+import random
 from flask_session import Session
 
 #App configuration
@@ -18,6 +19,7 @@ firebase = pyrebase.initialize_app(json.load(open('secrets.json')))
 auth = firebase.auth()
 # Authenticate Firebase tables
 db = firebase.database()
+
 from flask_cors import CORS, cross_origin
 import base64
 import os
@@ -135,7 +137,38 @@ def token():
             return jsonify(user)
         except:
             pass
-    return make_response(jsonify(message='Error invalid refresh token'), 401)
+    return make_response(jsonify(message='Error invalid refresh token'), 400)
+
+# Firestore Setup
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+# Use a service account
+cred = credentials.Certificate('fireStoreKey.json')
+firebase_admin.initialize_app(cred)
+firestore_db = firestore.client()
+
+# create shuffled list of sentences
+ls, index = [], 0
+sentences_ref = firestore_db.collection(u'sentences').stream()
+for sentence in sentences_ref:
+    ls.append(sentence)
+random.shuffle(ls)
+
+@app.route('/api/randomSentenceGenerator', methods=["GET"])
+def random_sentence_generator():
+    """ Returns a senctence from shuffled list of sentences
+    """
+    global index
+    try:
+        if index >= len(ls):
+            index = 0
+        sentence = jsonify(sentence=ls[index].get(u'sentence'))
+        index += 1
+        return sentence
+    except:
+        return make_response(jsonify(message='Cannot fetch a sentence'), 400)
 
 @app.route('/api/logout', methods=["POST"])
 def logout():
