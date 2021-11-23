@@ -11,10 +11,10 @@ import {
 	Image,
 } from "@chakra-ui/react";
 export const landing = (props) => {
-  let history = props.history;
-  const handleSignUpClick = () => {  
-    history.push('/signup')
-  } 
+	let history = props.history;
+	const handleSignUpClick = () => {
+		history.push("/signup");
+	};
 	return (
 		<div>
 			<NavBar
@@ -32,8 +32,8 @@ export const landing = (props) => {
 				direction={{ base: "column-reverse", md: "row" }}
 				wrap="no-wrap"
 				minH="70vh"
+				height="86vh"
 				px={8}
-				mb={16}
 			>
 				<Box
 					w={{ base: "80%", sm: "60%", md: "50%" }}
@@ -79,26 +79,34 @@ export const landing = (props) => {
 						your weak spots and allow for a personalized learning
 						experience to suit your language needs
 					</Text>
-					<Button
-            onClick={handleSignUpClick}
-						colorScheme="green"
-						borderRadius="8px"
-						py="4"
-						px="4"
-						lineHeight="1"
-						size="md"
-					>
-						{"Create your account now"}
-					</Button>
-					<Text
-						fontSize="xs"
-						mt={2}
-						textAlign="center"
-						color="primary.800"
-						opacity="0.6"
-					>
-						No credit card required.
-					</Text>
+					{localStorage.getItem("uid") ? (
+						""
+					) : (
+						<Button
+							onClick={handleSignUpClick}
+							colorScheme="green"
+							borderRadius="8px"
+							py="4"
+							px="4"
+							lineHeight="1"
+							size="md"
+						>
+							{"Create your account now"}
+						</Button>
+					)}
+					{localStorage.getItem("uid") ? (
+						""
+					) : (
+						<Text
+							fontSize="xs"
+							mt={2}
+							textAlign="center"
+							color="primary.800"
+							opacity="0.6"
+						>
+							No credit card required.
+						</Text>
+					)}
 				</Stack>
 			</Flex>
 			<Footer />
