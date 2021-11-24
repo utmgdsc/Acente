@@ -78,10 +78,13 @@ def user():
     confidence = []
     for result in response.results:
         for pair in result.alternatives[0].words:
-            words.append(pair.word.lower().replace(".", ""))
+            words.append(pair.word.lower())
             confidence.append(pair.confidence)
-    arr1, arr2 = parseGCPOutput("peter piper picked pickled peppers", words, confidence)
-    return {}
+    arr1, arr2 = parseGCPOutput(request.json['sentence'], words, confidence)
+    print(arr1, arr2, request.json['id'])
+    if request.json('sandbox', None):
+        pass
+    return arr1, arr2
 #Api route to get user data
 @app.route('/api/userinfo', methods=["POST"])
 def userinfo():
