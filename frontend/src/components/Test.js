@@ -91,8 +91,8 @@ const Test = () => {
 		const reader = new FileReader();
 		reader.readAsDataURL(audio.audioBlob);
 		reader.onload = () => {
-			const base64AudioMessage = reader.result.split(",")[1];
 			setTextLoaded(false);
+			const base64AudioMessage = reader.result.split(",")[1];
 			fetch("http://127.0.0.1:5000/messages", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
