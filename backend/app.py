@@ -1,43 +1,51 @@
+from firebase_admin import firestore
+from firebase_admin import credentials
+import firebase_admin
+from google.cloud import speech_v1p1beta1 as speech
+import os
+import base64
+from flask_cors import CORS, cross_origin
 import pyrebase
 import json
 from flask import Flask, request, jsonify, make_response, session
 from flask_cors import CORS
 import random
 from flask_session import Session
-
-#App configuration
+from datetime import timedelta
+# App configuration
 app = Flask(__name__)
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=5)
+app.config['SESSION_FILE_THRESHOLD'] = 100
+app.secret_key = "Acente DSC Group 3"
 Session(app)
 
 # # #Enable CORs
 cors = CORS(app)
 
-#Connect to firebase
+# Connect to firebase
 firebase = pyrebase.initialize_app(json.load(open('secrets.json')))
 auth = firebase.auth()
 # Authenticate Firebase tables
 db = firebase.database()
 
-from flask_cors import CORS, cross_origin
-import base64
-import os
-from google.cloud import speech_v1p1beta1 as speech
 PERFECT = 0
 ALMOST_THERE = 1
 POOR = 2
 
 cors = CORS(app)
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json" # service key required to access google cloud services
-speech_client = speech.SpeechClient() 
+# service key required to access google cloud services
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json"
+speech_client = speech.SpeechClient()
 
 # The confidence of word at index i in gcp_output_words is located at index i in gcp_output_confidence
+
+
 def parseGCPOutput(sentence, gcp_output_words, gcp_output_confidence):
     sentence_arr = sentence.lower().split(" ")
     confidence_arr = []
     confidence_levels = []
-    print(sentence)
     index = 0
     for word in sentence_arr:
         if word in gcp_output_words:
@@ -53,20 +61,21 @@ def parseGCPOutput(sentence, gcp_output_words, gcp_output_confidence):
         else:
             confidence_arr.append(0)
             confidence_levels.append(POOR)
-    
+
     return confidence_arr, confidence_levels
 
-@app.route("/messages", methods = ["POST"])
+
+@app.route("/messages", methods=["POST"])
 @cross_origin()
 def user():
     byte_data = base64.b64decode(request.json['message'])
     audio_mp3 = speech.RecognitionAudio(content=byte_data)
     config_mp3 = speech.RecognitionConfig(
-    encoding='MP3',
-    sample_rate_hertz= 16000,
-    enable_automatic_punctuation=True,
-    language_code='en-US',
-    enable_word_confidence=True
+        encoding='MP3',
+        sample_rate_hertz=16000,
+        enable_automatic_punctuation=True,
+        language_code='en-US',
+        enable_word_confidence=True
     )
 
     # Transcribing the audio into text
@@ -76,37 +85,64 @@ def user():
     )
     words = []
     confidence = []
+    sentence = request.json['sentence']
+    sentence_id = request.json['id']
+    user_id = request.json['uid']
     for result in response.results:
         for pair in result.alternatives[0].words:
-            words.append(pair.word.lower().replace(".", ""))
+            words.append(pair.word.lower())
             confidence.append(pair.confidence)
-    arr1, arr2 = parseGCPOutput("peter piper picked pickled peppers", words, confidence)
-    return {}
-#Api route to get user data
+    arr1, arr2 = parseGCPOutput(sentence, words, confidence)
+    sentence_arr = sentence.split(" ")
+    if not request.json.get('sandbox', None):
+        def find_avg(x, y): return (x*5+y*2)/7
+        sen_confidence = response.results[0].alternatives[0].confidence
+        prev = db.child('voice-data').child(user_id).child(sentence_id).get()
+        if prev.val():
+            sen_confidence = find_avg(prev.val(), sen_confidence)
+        db.child(
+            'voice-data').child(user_id).update({sentence_id: sen_confidence})
+        data = {}
+        for i in range(len(arr1)):
+            word_confidence = confidence[i]
+            prev = db.child('words').child(user_id).child(sentence_id).get()
+            if prev.val():
+                word_confidence = find_avg(prev.val(), word_confidence)
+            data[sentence_arr[i].strip('.')] = word_confidence
+        db.child('words').child(user_id).update(data)
+    return make_response(jsonify(confidence=arr2, sentence_arr=sentence_arr))
+# Api route to get user data
+
+
 @app.route('/api/userinfo', methods=["POST"])
 def userinfo():
     if (request.form.get('uid', None) and request.form.get('token', None)):
         try:
             auth.current_user = session.get("email", auth.current_user)
-            user = db.child("users").child(request.form['uid']).get(request.form['token'])
-            return jsonify(uid={user.key():user.val()})
+            user = db.child("users").child(
+                request.form['uid']).get(request.form['token'])
+            return jsonify(uid={user.key(): user.val()})
         except:
             pass
-    return make_response(jsonify(message='Error cannot retrieve user information'), 400) # invalid uid or token
+    # invalid uid or token
+    return make_response(jsonify(message='Error cannot retrieve user information'), 400)
 
-#Api route to sign up a new user
+# Api route to sign up a new user
+
+
 @app.route('/api/signup', methods=["POST"])
 def signup():
     data = {
-            "email":request.form.get('email'),
-            "name": request.form.get('name', ""),
-            "language": request.form.get('language', "English")
-            }
+        "email": request.form.get('email'),
+        "name": request.form.get('name', ""),
+        "language": request.form.get('language', "English")
+    }
     password = request.form.get('password')
     if not (data['email'] and password):
         return make_response(jsonify(message='Error missing required user information'), 400)
     try:
-        user = auth.create_user_with_email_and_password(email=data['email'], password=password)
+        user = auth.create_user_with_email_and_password(
+            email=data['email'], password=password)
         db.child('users').child(user['localId']).set(data, user['idToken'])
         session["email"] = user
         # auth.send_email_verification(user['idToken'])
@@ -115,6 +151,8 @@ def signup():
         return make_response(jsonify(message='Error creating user'), 401)
 
 # Api to refresh user token (Note token expire every hour)
+
+
 @app.route('/api/login', methods=["POST"])
 def login():
     email = request.form.get('email')
@@ -127,10 +165,12 @@ def login():
         return make_response(jsonify(message='Error authenticating user'), 401)
 
 # take refresh token and get new token
+
+
 @app.route('/api/token', methods=["POST"])
 def token():
     if request.form.get('refreshToken', None):
-        try: # Review sign_in_with_custom_token(self, token) function
+        try:  # Review sign_in_with_custom_token(self, token) function
             auth.current_user = session.setdefault("email", auth.current_user)
             user = auth.refresh(request.form['refreshToken'])
             session["email"].update(user)
@@ -139,44 +179,41 @@ def token():
             pass
     return make_response(jsonify(message='Error invalid refresh token'), 400)
 
+
 # Firestore Setup
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
 
 # Use a service account
 cred = credentials.Certificate('fireStoreKey.json')
 firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
-# create shuffled list of sentences
-ls, index = [], 0
+# create dict of sentences
+ls = {}
 sentences_ref = firestore_db.collection(u'sentences').stream()
 for sentence in sentences_ref:
-    ls.append(sentence)
-random.shuffle(ls)
+    dt = sentence.to_dict()
+    dt['id'] = sentence.id
+    ls[sentence.id] = dt
+
 
 @app.route('/api/randomSentenceGenerator', methods=["GET"])
 def random_sentence_generator():
-    """ Returns a senctence from shuffled list of sentences
+    """ Returns a random senctence from collection of sentences
     """
-    global index
     try:
-        if index >= len(ls):
-            index = 0
-        sentence = jsonify(sentence=ls[index].get(u'sentence'))
-        index += 1
-        return sentence
+        sentence = random.choice(list(ls))
+        return jsonify(sentence=ls[sentence])
     except:
         return make_response(jsonify(message='Cannot fetch a sentence'), 400)
+
 
 @app.route('/api/logout', methods=["POST"])
 def logout():
     if session.get("email"):
         session.pop("email", None)
-        auth.current_user = None
-        return jsonify("Logged out user successfully")
-    return make_response(jsonify(message='Error cannot log out current user'), 400)
+    auth.current_user = None
+    return jsonify("Logged out user successfully")
+
 
 if __name__ == '__main__':
-    app.run() # add debug=True for dev
+    app.run()  # add debug=True for dev
