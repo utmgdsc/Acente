@@ -27,10 +27,8 @@ const recordAudio = () =>
 		};
 
 		const stop = () => {
-			console.log("inside stop");
 			const promise = new Promise((resolve) => {
 				mediaRecorder.addEventListener("stop", () => {
-					console.log("inside mediaRecorder");
 					const audioBlob = new Blob(audioChunks, {
 						type: "audio/mp3",
 					});
@@ -85,22 +83,16 @@ const Test = () => {
 
 	const handleRecordButtonClick = async () => {
 		if (!recorder) {
-			console.log("hellos");
 			recorder = await recordAudio();
 		}
 		recorder.start();
-		console.log(recorder);
 		setDisableRecordBtn(true);
 		setDisablePlayBtn(false);
 	};
 
 	const handleStopButtonClick = async () => {
 		console.log(recorder);
-		console.log("inside handlestopbuttonclick");
 		audio = await recorder.stop();
-		console.log(audio);
-		console.log(recorder);
-		console.log(recorder[0]);
 		handleSaveButtonClick();
 		setDisableRecordBtn(false);
 	};
@@ -118,13 +110,13 @@ const Test = () => {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					message: base64AudioMessage,
+					uid: localStorage.getItem('uid'),
+                    message: base64AudioMessage,
 					...sentence,
 				}),
 			}).then((res) => {
 				if (res.status === 200) {
 					res.json().then((r) => {
-						console.log(r);
 						setConfidence(r.confidence);
 						setSentenceArr(r.sentence_arr);
 					});
@@ -176,7 +168,7 @@ const Test = () => {
 							width="70px"
 							backgroundColor="#CBD5E0"
 							style={{
-								display: disablePlayBtn ? "block" : "none",
+								display: (disablePlayBtn && audio) ? "block" : "none",
 							}}
 							onClick={handlePlayButtonClick}
 						>
@@ -193,7 +185,7 @@ const Test = () => {
 							width="70px"
 							backgroundColor="#CBD5E0"
 							style={{
-								display: (disableRecordBtn && !audio) ? "none" : "block",
+								display: disableRecordBtn  ? "none" : "block",
 							}}
 							onClick={handleRecordButtonClick}
 						>
@@ -253,8 +245,7 @@ const Test = () => {
 						fontSize="5xl"
 						justifyContent="left"
 					>
-						{" "}
-						Your History{" "}
+						{" Your History "}
 					</Center>
 				</Box>
 				<Box
