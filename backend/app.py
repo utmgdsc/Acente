@@ -48,7 +48,7 @@ def parseGCPOutput(sentence, gcp_output_words, gcp_output_confidence):
     confidence_levels = []
     index = 0
     for word in sentence_arr:
-        if word in gcp_output_words:
+        if word in gcp_output_words[index:]:
             index = gcp_output_words.index(word, index)
             confidence_arr.append(gcp_output_confidence[index])
             if gcp_output_confidence[index] >= 0.97:
@@ -104,7 +104,7 @@ def user():
             'voice-data').child(user_id).update({sentence_id: sen_confidence})
         data = {}
         for i in range(len(arr1)):
-            word_confidence = confidence[i]
+            word_confidence = arr1[i]
             prev = db.child('words').child(user_id).child(sentence_id).get()
             if prev.val():
                 word_confidence = find_avg(prev.val(), word_confidence)
