@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { HStack, VStack, Box, Center, Icon, Button } from "@chakra-ui/react";
+import { HStack, VStack, Box, Center, Icon, Button, Skeleton } from "@chakra-ui/react";
 
 import { HiMicrophone } from "react-icons/hi";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
@@ -50,6 +50,7 @@ const recordAudio = () =>
 const Test = () => {
 	const [disableRecordBtn, setDisableRecordBtn] = useState(false);
 	const [disablePlayBtn, setDisablePlayBtn] = useState(false);
+	const [textLoaded, setTextLoaded] = useState(false);
 	const [sentence, setSentence] = useState({ sentence: "", id: "0" });
 	const [confidence, setConfidence] = useState([]);
 	const [sentence_arr, setSentenceArr] = useState([]);
@@ -66,21 +67,6 @@ const Test = () => {
 	}, []);
 
 	const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
-
-	// const handleRecordClick = async () => {
-	//     if (showRecordingButton == 0) {
-	//         setshowRecordingButton(1);
-	//         if (!recorder) {
-	//             recorder = await recordAudio();
-	//         }
-	//         recorder.start();
-	//     }
-	//     else {
-	//         setshowRecordingButton(0);
-	//         audio = await recorder.stop();
-	//     }
-	// }
-
 	const handleRecordButtonClick = async () => {
 		if (!recorder) {
 			recorder = await recordAudio();
@@ -106,6 +92,7 @@ const Test = () => {
 		reader.readAsDataURL(audio.audioBlob);
 		reader.onload = () => {
 			const base64AudioMessage = reader.result.split(",")[1];
+			setTextLoaded(false);
 			fetch("http://127.0.0.1:5000/messages", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -119,6 +106,7 @@ const Test = () => {
 					res.json().then((r) => {
 						setConfidence(r.confidence);
 						setSentenceArr(r.sentence_arr);
+						setTextLoaded(true);
 					});
 				} else {
 					console.log(
@@ -129,7 +117,7 @@ const Test = () => {
 		};
 		setDisablePlayBtn(true);
 	};
-	const colours = ["gray", "yellowgreen", "red"];
+	const colours = ["gray", "orange", "red"];
 	return (
 		<HStack
 			height="86vh"
@@ -221,6 +209,7 @@ const Test = () => {
 					borderRadius="3xl"
 					padding="20px"
 				>
+					<Skeleton isLoaded={textLoaded}>
 					<Center
 						color="gray"
 						fontWeight="light"
@@ -235,6 +224,7 @@ const Test = () => {
 							))}
 						</p>
 					</Center>
+					</Skeleton>
 				</Box>
 			</VStack>
 			<VStack height="100%" width="30%">
