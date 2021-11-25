@@ -15,6 +15,9 @@ export const landing = (props) => {
 	const handleSignUpClick = () => {
 		history.push("/signup");
 	};
+	const handlePracticeClick = () => {
+		history.push("/practice");
+	};
 	return (
 		<div>
 			<NavBar
@@ -80,7 +83,18 @@ export const landing = (props) => {
 						experience to suit your language needs
 					</Text>
 					{localStorage.getItem("uid") ? (
-						""
+						(
+							<Button
+								onClick={handlePracticeClick}
+								colorScheme="green"
+								borderRadius="8px"
+								py="4"
+								px="4"
+								size="md"
+							>
+								{"Start practicing now"}
+							</Button>
+						)
 					) : (
 						<Button
 							onClick={handleSignUpClick}
