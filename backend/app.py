@@ -88,7 +88,9 @@ def user():
     sentence = request.json['sentence']
     sentence_id = request.json['id']
     user_id = request.json['uid']
+    sen_confidence = 0
     for result in response.results:
+        sen_confidence = result.alternatives[0].confidence
         for pair in result.alternatives[0].words:
             words.append(pair.word.lower())
             confidence.append(pair.confidence)
@@ -96,7 +98,6 @@ def user():
     sentence_arr = sentence.split(" ")
     if not request.json.get('sandbox', None):
         def find_avg(x, y): return (x*5+y*2)/7
-        sen_confidence = response.results[0].alternatives[0].confidence
         prev = db.child('voice-data').child(user_id).child(sentence_id).get()
         if prev.val():
             sen_confidence = find_avg(prev.val(), sen_confidence)
