@@ -1,9 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { HStack, VStack, Box, Center, Icon, Button, Skeleton, Input, Editable, EditablePreview, EditableInput, useEditableControls, Flex, IconButton, ButtonGroup} from "@chakra-ui/react";
+import React, { useState } from "react";
+import {
+	HStack,
+	VStack,
+	Box,
+	Center,
+	Icon,
+	Button,
+	Skeleton,
+	Input,
+	Editable,
+	EditablePreview,
+	EditableInput,
+	useEditableControls,
+	Flex,
+	IconButton,
+	ButtonGroup,
+} from "@chakra-ui/react";
 
-import {EditIcon, CheckIcon, CloseIcon} from "@chakra-ui/icons";
+import { EditIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { HiMicrophone } from "react-icons/hi";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
+import VoiceHistory from "../components/VoiceHistory";
 
 const axios = require("axios");
 
@@ -55,8 +72,9 @@ const Sandbox = () => {
 	const [sentence, setSentence] = useState({ sentence: "", id: "0" });
 	const [confidence, setConfidence] = useState([]);
 	const [sentence_arr, setSentenceArr] = useState([]);
-    const [sentenceUpdate, setSentenceUpdate] = useState("");
-    // const [isReadOnly, setReadOnly] = useState(false);
+	const [sentenceUpdate, setSentenceUpdate] = useState("");
+	const [audioUrls, setAudioUrls] = useState([]);
+	// const [isReadOnly, setReadOnly] = useState(false);
 
 	// useEffect(() => {
 	// 	axios({
@@ -71,33 +89,41 @@ const Sandbox = () => {
 
 	const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
-    function EditableControls() {
-        const {
-          isEditing,
-          getSubmitButtonProps,
-          getCancelButtonProps,
-          getEditButtonProps,
-        } = useEditableControls()
+	function EditableControls() {
+		const {
+			isEditing,
+			getSubmitButtonProps,
+			getCancelButtonProps,
+			getEditButtonProps,
+		} = useEditableControls();
 
-        const handleCheckClick = () => {
-            setSentence({sentence: sentenceUpdate, id: "0"});
-        };
-    
-        return isEditing ? (
-          <ButtonGroup justifyContent="center" size="lg">
-            <IconButton icon={<CheckIcon />} onClick={handleCheckClick} {...getSubmitButtonProps()} />
-            <IconButton icon={<CloseIcon />} {...getCancelButtonProps()} />
-          </ButtonGroup>
-        ) : (
-          <Flex justifyContent="center">
-            <IconButton size="lg" icon={<EditIcon />} {...getEditButtonProps()} />
-          </Flex>
-        )
-      }
+		const handleCheckClick = () => {
+			setSentence({ sentence: sentenceUpdate, id: "0" });
+		};
 
-    const handleSentenceUpdate = (event) => {
-        setSentenceUpdate(event);
-    };
+		return isEditing ? (
+			<ButtonGroup justifyContent="center" size="lg">
+				<IconButton
+					icon={<CheckIcon />}
+					onClick={handleCheckClick}
+					{...getSubmitButtonProps()}
+				/>
+				<IconButton icon={<CloseIcon />} {...getCancelButtonProps()} />
+			</ButtonGroup>
+		) : (
+			<Flex justifyContent="center">
+				<IconButton
+					size="lg"
+					icon={<EditIcon />}
+					{...getEditButtonProps()}
+				/>
+			</Flex>
+		);
+	}
+
+	const handleSentenceUpdate = (event) => {
+		setSentenceUpdate(event);
+	};
 
 	const handleRecordButtonClick = async () => {
 		if (!recorder) {
@@ -111,6 +137,10 @@ const Sandbox = () => {
 	const handleStopButtonClick = async () => {
 		console.log(recorder);
 		audio = await recorder.stop();
+		setAudioUrls([
+			{ sentence: sentence.sentence, url: audio.audioUrl },
+			...audioUrls,
+		]);
 		handleSaveButtonClick();
 		setDisableRecordBtn(false);
 	};
@@ -129,10 +159,10 @@ const Sandbox = () => {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					uid: localStorage.getItem('uid'),
-                    message: base64AudioMessage,
+					uid: localStorage.getItem("uid"),
+					message: base64AudioMessage,
 					...sentence,
-                    sandbox: true,
+					sandbox: true,
 				}),
 			}).then((res) => {
 				if (res.status === 200) {
@@ -167,21 +197,23 @@ const Sandbox = () => {
 					padding="20px"
 					position="relative"
 				>
-                    <Editable 
-                        color="gray"
-                        fontWeight="light"
-                        fontSize="3xl"
-                        justifyContent="left"
-                        textAlign="center"
-                        defaultValue="Pineapples belong on pizza"
-                        isPreviewFocusable={false}
-                        onChange={handleSentenceUpdate}
-                        onSubmit={() => setSentence({sentence: sentenceUpdate, id: "0"})}
-                        >
-                        <EditablePreview />
-                        <EditableInput onBlur={null}/>
-                        <EditableControls bottom="20px"/>
-                    </Editable>
+					<Editable
+						color="gray"
+						fontWeight="light"
+						fontSize="3xl"
+						justifyContent="left"
+						textAlign="center"
+						defaultValue="Pineapples belong on pizza"
+						isPreviewFocusable={false}
+						onChange={handleSentenceUpdate}
+						onSubmit={() =>
+							setSentence({ sentence: sentenceUpdate, id: "0" })
+						}
+					>
+						<EditablePreview />
+						<EditableInput onBlur={null} />
+						<EditableControls bottom="20px" />
+					</Editable>
 					<HStack
 						spacing={4}
 						align="right"
@@ -195,7 +227,8 @@ const Sandbox = () => {
 							width="70px"
 							backgroundColor="#CBD5E0"
 							style={{
-								display: (disablePlayBtn && audio) ? "block" : "none",
+								display:
+									disablePlayBtn && audio ? "block" : "none",
 							}}
 							onClick={handlePlayButtonClick}
 						>
@@ -212,7 +245,7 @@ const Sandbox = () => {
 							width="70px"
 							backgroundColor="#CBD5E0"
 							style={{
-								display: disableRecordBtn  ? "none" : "block",
+								display: disableRecordBtn ? "none" : "block",
 							}}
 							onClick={handleRecordButtonClick}
 						>
@@ -245,41 +278,25 @@ const Sandbox = () => {
 					padding="20px"
 				>
 					<Skeleton isLoaded={textLoaded}>
-					<Center
-						color="gray"
-						fontWeight="light"
-						fontSize="3xl"
-						justifyContent="left"
-					>
-						<p>
-							{confidence.map((k, i) => (
-								<span style={{ color: colours[k] }} key={i}>
-									{sentence_arr[i] + " "}
-								</span>
-							))}
-						</p>
-					</Center>
+						<Center
+							color="gray"
+							fontWeight="light"
+							fontSize="3xl"
+							justifyContent="left"
+						>
+							<p>
+								{confidence.map((k, i) => (
+									<span style={{ color: colours[k] }} key={i}>
+										{sentence_arr[i] + " "}
+									</span>
+								))}
+							</p>
+						</Center>
 					</Skeleton>
 				</Box>
 			</VStack>
 			<VStack height="100%" width="30%">
-				<Box height="15%" width="100%">
-					<Center
-						color="gray"
-						fontWeight="10px"
-						fontSize="5xl"
-						justifyContent="left"
-					>
-						{" Your History "}
-					</Center>
-				</Box>
-				<Box
-					height="85%"
-					width="100%"
-					backgroundColor="#EDF2F7"
-					borderRadius="3xl"
-					padding="20px"
-				></Box>
+				<VoiceHistory urls={audioUrls} />
 			</VStack>
 		</HStack>
 	);

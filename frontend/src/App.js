@@ -8,6 +8,7 @@ import login from "./views/login";
 import signup from "./views/signup";
 import dashboard from "./views/dashboard";
 import practice from "./views/practice";
+import sandbox from "./views/sandbox";
 
 function App() {
 	return (
