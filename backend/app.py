@@ -1,17 +1,19 @@
-from firebase_admin import firestore
-from firebase_admin import credentials
-import firebase_admin
-from google.cloud import speech_v1p1beta1 as speech
-import os
+""" Api for Acente backend """
 import base64
-from flask_cors import CORS, cross_origin
-import pyrebase
 import json
-from flask import Flask, request, jsonify, make_response, session
-from flask_cors import CORS
+import os
 import random
-from flask_session import Session
 from datetime import timedelta
+
+import firebase_admin
+import pyrebase
+from firebase_admin import credentials, firestore
+from flask import Flask, jsonify, make_response, request, session
+from flask_cors import CORS, cross_origin
+from google.cloud import speech_v1p1beta1 as speech
+
+from flask_session import Session
+
 # App configuration
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
@@ -39,11 +41,11 @@ cors = CORS(app)
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json"
 speech_client = speech.SpeechClient()
 
-# The confidence of word at index i in gcp_output_words is located at index i in gcp_output_confidence
 
-
-def parseGCPOutput(sentence, gcp_output_words, gcp_output_confidence):
-    sentence_arr = sentence.lower().split(" ")
+def parse_output(sentence_arr, gcp_output_words, gcp_output_confidence):
+    """The confidence of word at index i in gcp_output_words is
+        located at index i in gcp_output_confidence
+    """
     confidence_arr = []
     confidence_levels = []
     index = 0
@@ -67,7 +69,7 @@ def parseGCPOutput(sentence, gcp_output_words, gcp_output_confidence):
 
 @app.route("/messages", methods=["POST"])
 @cross_origin()
-def user():
+def messages():
     byte_data = base64.b64decode(request.json['message'])
     audio_mp3 = speech.RecognitionAudio(content=byte_data)
     config_mp3 = speech.RecognitionConfig(
@@ -85,26 +87,26 @@ def user():
     )
     words = []
     confidence = []
-    sentence = request.json['sentence']
+    sentence_arr = request.json['sentence'].lower().split(" ")
     sentence_id = request.json['id']
     user_id = request.json['uid']
+    sen_confidence = 0
     for result in response.results:
+        sen_confidence = result.alternatives[0].confidence
         for pair in result.alternatives[0].words:
             words.append(pair.word.lower())
             confidence.append(pair.confidence)
-    arr1, arr2 = parseGCPOutput(sentence, words, confidence)
-    sentence_arr = sentence.split(" ")
+    arr1, arr2 = parse_output(sentence_arr, words, confidence)
     if not request.json.get('sandbox', None):
-        def find_avg(x, y): return (x*5+y*2)/7
-        sen_confidence = response.results[0].alternatives[0].confidence
+        def find_avg(x, y): 
+            return (x*5+y*2)/7
         prev = db.child('voice-data').child(user_id).child(sentence_id).get()
         if prev.val():
             sen_confidence = find_avg(prev.val(), sen_confidence)
         db.child(
             'voice-data').child(user_id).update({sentence_id: sen_confidence})
         data = {}
-        for i in range(len(arr1)):
-            word_confidence = arr1[i]
+        for i, word_confidence in enumerate(arr1):
             prev = db.child('words').child(user_id).child(sentence_id).get()
             if prev.val():
                 word_confidence = find_avg(prev.val(), word_confidence)
@@ -201,8 +203,7 @@ def random_sentence_generator():
     """ Returns a random senctence from collection of sentences
     """
     try:
-        sentence = random.choice(list(ls))
-        return jsonify(sentence=ls[sentence])
+        return jsonify(sentence=ls[random.choice(list(ls))])
     except:
         return make_response(jsonify(message='Cannot fetch a sentence'), 400)
 
@@ -217,4 +218,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run()  # add debug=True for dev
-
