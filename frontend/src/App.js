@@ -6,8 +6,9 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Landing from './views/landing';
 import login from './views/login';
 import signup from './views/signup';
-import dashboard from './views/dashboard'
-import practice from './views/practice'
+import dashboard from './views/dashboard';
+import practice from './views/practice';
+import sandbox from './views/sandbox';
  
 function App() {
  return (
@@ -28,6 +29,9 @@ function App() {
        </Switch>
        <Switch>
          <Route exact path="/practice" component={practice} />
+       </Switch>
+       <Switch>
+         <Route exact path="/sandbox" component={sandbox} />
        </Switch>
      </BrowserRouter>
      </IntlProvider>

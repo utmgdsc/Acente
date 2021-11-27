@@ -45,6 +45,10 @@ const NavBar = ({type}) => {
         history.push('/dashboard')
     }
 
+    const handleSandboxClick = () => {
+        history.push('/sandbox')
+    }
+
     const handleLogoutClick = () => {
         if (localStorage.getItem('uid')){
             axios({
@@ -100,7 +104,7 @@ const NavBar = ({type}) => {
                             Practice
                             </MenuItem>
                             <MenuDivider/>
-                            <MenuItem minHeight="13vh" icon={<GiNotebook />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}}>
+                            <MenuItem minHeight="13vh" icon={<GiNotebook />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handleSandboxClick}>
                             Sandbox
                             </MenuItem>
                             <MenuDivider/>
