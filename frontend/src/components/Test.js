@@ -3,6 +3,7 @@ import { HStack, VStack, Box, Center, Icon, Button, Skeleton } from "@chakra-ui/
 
 import { HiMicrophone } from "react-icons/hi";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
+import VoiceHistory from "../components/VoiceHistory";
 
 const axios = require("axios");
 
@@ -54,7 +55,7 @@ const Test = () => {
 	const [sentence, setSentence] = useState({ sentence: "", id: "0" });
 	const [confidence, setConfidence] = useState([]);
 	const [sentence_arr, setSentenceArr] = useState([]);
-
+	const [audioUrls, setAudioUrls] = useState([]);
 	useEffect(() => {
 		axios({
 			method: "GET",
@@ -66,7 +67,6 @@ const Test = () => {
 		});
 	}, []);
 
-	const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 	const handleRecordButtonClick = async () => {
 		if (!recorder) {
 			recorder = await recordAudio();
@@ -77,8 +77,8 @@ const Test = () => {
 	};
 
 	const handleStopButtonClick = async () => {
-		console.log(recorder);
 		audio = await recorder.stop();
+		setAudioUrls([{sentence: sentence.sentence, url:audio.audioUrl}, ...audioUrls]);
 		handleSaveButtonClick();
 		setDisableRecordBtn(false);
 	};
@@ -90,6 +90,7 @@ const Test = () => {
 	const handleSaveButtonClick = () => {
 		const reader = new FileReader();
 		reader.readAsDataURL(audio.audioBlob);
+
 		reader.onload = () => {
 			setTextLoaded(false);
 			const base64AudioMessage = reader.result.split(",")[1];
@@ -228,23 +229,7 @@ const Test = () => {
 				</Box>
 			</VStack>
 			<VStack height="100%" width="30%">
-				<Box height="15%" width="100%">
-					<Center
-						color="gray"
-						fontWeight="10px"
-						fontSize="5xl"
-						justifyContent="left"
-					>
-						{" Your History "}
-					</Center>
-				</Box>
-				<Box
-					height="85%"
-					width="100%"
-					backgroundColor="#EDF2F7"
-					borderRadius="3xl"
-					padding="20px"
-				></Box>
+				<VoiceHistory urls={audioUrls} />
 			</VStack>
 		</HStack>
 	);
