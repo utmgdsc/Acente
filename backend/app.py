@@ -113,6 +113,7 @@ def messages():
             data[sentence_arr[i].strip('.')] = word_confidence
         db.child('words').child(user_id).update(data)
     return make_response(jsonify(confidence=arr2, sentence_arr=sentence_arr))
+
 # Api route to get user data
 
 
@@ -171,14 +172,14 @@ def login():
 
 @app.route('/api/token', methods=["POST"])
 def token():
-    if request.form.get('refreshToken', None):
-        try:  # Review sign_in_with_custom_token(self, token) function
-            auth.current_user = session.setdefault("email", auth.current_user)
-            user = auth.refresh(request.form['refreshToken'])
-            session["email"].update(user)
-            return jsonify(user)
-        except:
-            pass
+    # if request.form.get('refreshToken', None):
+    try:  # Review sign_in_with_custom_token(self, token) function
+        auth.current_user = session.setdefault("email", auth.current_user)
+        user = auth.refresh(request.form['refreshToken'])
+        session["email"].update(user)
+        return jsonify(user)
+    except:
+        pass
     return make_response(jsonify(message='Error invalid refresh token'), 400)
 
 
