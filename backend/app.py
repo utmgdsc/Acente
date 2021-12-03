@@ -66,7 +66,6 @@ def parse_output(sentence_arr, gcp_output_words, gcp_output_confidence):
 
     return confidence_arr, confidence_levels
 
-
 @app.route("/messages", methods=["POST"])
 @cross_origin()
 def messages():
@@ -122,11 +121,21 @@ def userinfo():
     if (request.form.get('uid', None) and request.form.get('token', None)):
         try:
             auth.current_user = session.get("email", auth.current_user)
-            user = db.child("users").child(
-                request.form['uid']).get(request.form['token'])
-            return jsonify(uid={user.key(): user.val()})
-        except:
-            pass
+            user = db.child("users").child(request.form['uid']).get(request.form['token'])
+            weakWords = db.child("words").child(request.form['uid']).key().get()
+            # weakWords = db.child("words").child(request.form['uid']).key().get(request.form['token']).val().items()
+            # print(list(weakWords))
+            # weakWords = weakWords[request.form['uid']]
+            # print(weakWords)
+            # weakWords.sort(lambda x:int(x[1]))
+            # print(weakWords)
+            # strongWords = db.child("words").child(request.form['uid']).get(request.form['token'])
+            return jsonify(uid={user.key(): user.val()}, weakWords={weakWords.key(): weakWords.val()})
+            # # 
+            #                
+            #                strongWords={strongWords.key(): strongWords.val()}
+        except Exception as e:
+            print(e)
     # invalid uid or token
     return make_response(jsonify(message='Error cannot retrieve user information'), 400)
 
