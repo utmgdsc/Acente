@@ -122,18 +122,10 @@ def userinfo():
         try:
             auth.current_user = session.get("email", auth.current_user)
             user = db.child("users").child(request.form['uid']).get(request.form['token'])
-            weakWords = db.child("words").child(request.form['uid']).key().get()
-            # weakWords = db.child("words").child(request.form['uid']).key().get(request.form['token']).val().items()
-            # print(list(weakWords))
-            # weakWords = weakWords[request.form['uid']]
-            # print(weakWords)
-            # weakWords.sort(lambda x:int(x[1]))
-            # print(weakWords)
-            # strongWords = db.child("words").child(request.form['uid']).get(request.form['token'])
-            return jsonify(uid={user.key(): user.val()}, weakWords={weakWords.key(): weakWords.val()})
-            # # 
-            #                
-            #                strongWords={strongWords.key(): strongWords.val()}
+            words = db.child("words").child(request.form['uid']).get().val().items()
+            words = list(words)
+            words.sort(key=lambda x: x[1])
+            return jsonify(uid={user.key(): user.val()}, words=words)
         except Exception as e:
             print(e)
     # invalid uid or token
