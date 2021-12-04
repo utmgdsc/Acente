@@ -14,6 +14,7 @@ import {
   Button,
   Flex,
 } from "@chakra-ui/react";
+import { useIntl } from "react-intl";
 
 const axios = require('axios');
 
@@ -26,6 +27,8 @@ const SignUpForm = () => {
   } = useForm();
 
   const [isSubmitError, changeSubmitError ] = useState('');
+
+  const { formatMessage } = useIntl();
 
   function onSubmit(values) {
     let bodyFormData = new FormData();
@@ -45,7 +48,7 @@ const SignUpForm = () => {
         localStorage.setItem('uid', response.data['localId']);
         localStorage.setItem('refreshToken', response.data['refreshToken']);
         changeSubmitError('');
-        history.push('/dashboard');
+        history.push('dashboard');
       }
       changeSubmitError("It seems like you've already signed up. Try logging in!");
     })
@@ -63,32 +66,32 @@ const SignUpForm = () => {
               ACENTÉ
             </Center>
             <Center fontSize="3xl" color="gray">
-              Sign Up
+              {formatMessage({id: "signup"})}
             </Center>
             <Center color="red.500">
               {isSubmitError}
             </Center>
             <FormControl id="name" isInvalid={errors.name}>
-              <FormLabel mb="1px">Name</FormLabel>
+              <FormLabel mb="1px">{formatMessage({id: "name"})}</FormLabel>
               <Input
                 name="name"
                 placeholder="JohnDoe" 
                 borderWidth="2px"
                 {...register("name", {
-                  required: "This is required",
+                  required: formatMessage({id: 'required'}),
               })}/>
               <FormErrorMessage>
               {errors.name && errors.name.message}
             </FormErrorMessage>
             </FormControl>
             <FormControl id="language" isInvalid={errors.language}>
-              <FormLabel mb="1px">Language</FormLabel>
+              <FormLabel mb="1px">{formatMessage({id: "language"})}</FormLabel>
               <Input 
                 name="language"
                 placeholder="Klingon" 
                 borderWidth="2px"
                 {...register("language", {
-                  required: "This is required",
+                  required: formatMessage({id: 'required'}),
               })}/>
               <FormErrorMessage>
               {errors.language && errors.language.message}
@@ -96,7 +99,7 @@ const SignUpForm = () => {
             </FormControl>
             <FormControl id="email" isInvalid={errors.email}>
               <FormLabel mb="1px" mt="8px">
-                Email address
+              {formatMessage({id: "email"})}
               </FormLabel>
               <Input
                 name="email"
@@ -104,30 +107,30 @@ const SignUpForm = () => {
                 borderWidth="2px"
                 placeholder="johndoe@fakeemail.com"
                 {...register("email", {
-                  required: "This is required",
+                  required: formatMessage({id: "required"}),
               })}/>
               <FormHelperText mt="1px">
-                We'll never share your email.
+              {formatMessage({id: "emailDisclaimer"})}
               </FormHelperText>
               <FormErrorMessage>
               {errors.email && errors.email.message}
             </FormErrorMessage>
             </FormControl>
             <FormControl id="password" isInvalid={errors.password}>
-              <FormLabel mb="1px">Password</FormLabel>
+              <FormLabel mb="1px">{formatMessage({id: "password"})}</FormLabel>
               <Input borderWidth="2px"
                 name="password"
                 type="password"
                 {...register("password", {
-                  required: "This is required",
-                  minLength: { value: 8, message: "Minimum length should be 8" }
+                  required: formatMessage({id: "required"}),
+                  minLength: { value: 8, message: formatMessage({id: "minimum"}) }
               })}/>
               <FormErrorMessage>
               {errors.password && errors.password.message}
             </FormErrorMessage>
             </FormControl>
           </Flex>
-          <Button colorScheme="gray" type="submit" isLoading={isSubmitting}>Submit</Button>
+          <Button colorScheme="gray" type="submit" isLoading={isSubmitting}>{formatMessage({id: "submit"})}</Button>
       </VStack>
       </form>
   </Box>

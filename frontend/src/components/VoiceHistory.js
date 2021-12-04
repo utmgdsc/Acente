@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
 import { HStack, VStack, Box, Center, Icon, Button } from "@chakra-ui/react";
+import { useIntl } from "react-intl";
+
 const VoiceHistory = ({ urls }) => {
 	/**
 	 * This component stores and renders past sentences and audio voice of users.
 	 */
+	const { formatMessage } = useIntl();
 	const sources = urls.map((url) => {
 		return {
 			audio: new Audio(url.url),
@@ -75,7 +78,7 @@ const VoiceHistory = ({ urls }) => {
 					fontSize="5xl"
 					justifyContent="left"
 				>
-					{" History "}
+					{formatMessage({id: "history"})}
 				</Center>
 			</Box>
 			<VStack

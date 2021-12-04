@@ -1,13 +1,18 @@
 import { render, screen } from '@testing-library/react';
 import SignUpForm from '../components/SignUpForm';
+import { IntlProvider } from 'react-intl';
+import appStrings from '../i18n/languages';
 
 
 beforeEach(() => {
-  render(<SignUpForm title="Test"/>)
-})
+  render(
+    <IntlProvider locale={'en'} messages={appStrings['en']}>
+    <SignUpForm title="Test"/>)
+    </IntlProvider>
+)});
 
 test('Shows email correctly', () => {
-  const EmailElement = screen.getByText("Email address");
+  const EmailElement = screen.getByText("Email Address");
   expect(EmailElement).toBeInTheDocument();
 
 })
