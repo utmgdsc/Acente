@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
 import { HStack, VStack, Box, Center, Icon, Button } from "@chakra-ui/react";
+import Sentence from "../components/Sentence";
 const VoiceHistory = ({ urls }) => {
 	/**
 	 * This component stores and renders past sentences and audio voice of users.
 	 */
+	console.log(urls);
 	const sources = urls.map((url) => {
 		return {
 			audio: new Audio(url.url),
@@ -65,7 +67,7 @@ const VoiceHistory = ({ urls }) => {
 				});
 			});
 		};
-	}, [sources]);
+	}, [sources, players]);
 	return (
 		<Box height="100%" width="100%">
 			<Box height="10%" width="100%">
@@ -102,7 +104,7 @@ const Player = ({ player, toggle }) => (
 			fontSize="2xl"
 			justifyContent="left"
 		>
-			{player.sentence}
+			<Sentence confidence={player.confidence} sentence_arr={player.sentence_arr} textLoaded={true} />
 		</Center>
 		<HStack spacing={2} align="right">
 			<Button onClick={toggle}>

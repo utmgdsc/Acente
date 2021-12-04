@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { HStack, VStack, Box, Center, Icon, Button, Skeleton } from "@chakra-ui/react";
+import { HStack, VStack, Box, Center, Icon, Button } from "@chakra-ui/react";
 
 import { HiMicrophone } from "react-icons/hi";
 import {GrRefresh} from "react-icons/gr";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
+import Sentence from "../components/Sentence";
 import VoiceHistory from "../components/VoiceHistory";
 
 const axios = require("axios");
@@ -106,7 +107,6 @@ const Test = () => {
 	 */
 	const handleStopButtonClick = async () => {
 		audio = await recorder.stop();
-		setAudioUrls([{sentence: sentence.sentence, url:audio.audioUrl}, ...audioUrls]);
 		handleSaveButtonClick();
 		setDisableRecordBtn(false);
 	};
@@ -142,6 +142,7 @@ const Test = () => {
 						setConfidence(r.confidence);
 						setSentenceArr(r.sentence_arr);
 						setTextLoaded(true);
+						setAudioUrls([{url:audio.audioUrl, confidence:r.confidence, sentence_arr:r.sentence_arr}, ...audioUrls]);
 					});
 				} else {
 					console.log(
@@ -152,7 +153,6 @@ const Test = () => {
 		};
 		setDisablePlayBtn(true);
 	};
-	const colours = ["gray", "orange", "red"];
 	return (
 		<HStack
 			height="86vh"
@@ -250,22 +250,7 @@ const Test = () => {
 					borderRadius="3xl"
 					padding="20px"
 				>
-					<Skeleton isLoaded={textLoaded}>
-					<Center
-						color="gray"
-						fontWeight="light"
-						fontSize="3xl"
-						justifyContent="left"
-					>
-						<p>
-							{confidence.map((k, i) => (
-								<span style={{ color: colours[k] }} key={i}>
-									{sentence_arr[i] + " "}
-								</span>
-							))}
-						</p>
-					</Center>
-					</Skeleton>
+					<Sentence confidence={confidence} sentence_arr={sentence_arr} textLoaded={textLoaded} />
 				</Box>
 			</VStack>
 			<VStack height="100%" width="30%">
