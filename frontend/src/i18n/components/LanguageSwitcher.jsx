@@ -46,7 +46,7 @@ export const LanguageSwitcher = () => {
       </MenuButton>
       <MenuList>
         {Object.keys(AppLanguage).map((lang) =>(
-          <MenuItem onClick={() => history.push(getMatchingRoute(AppLanguage[lang]))}>{lang}</MenuItem>
+          <MenuItem key={lang} onClick={() => history.push(getMatchingRoute(AppLanguage[lang]))}>{lang}</MenuItem>
         ))}
       </MenuList>
     </>
