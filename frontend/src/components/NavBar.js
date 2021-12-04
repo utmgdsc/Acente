@@ -23,26 +23,52 @@ import {HiMicrophone} from "react-icons/hi"
 const axios = require('axios');
 
 const NavBar = ({type}) => {
+    /**
+	 * This component displays the Navigation bar. The nav bar displays the login/signup buttons when user has not logged in. 
+     * After User has logged in, the burger menu is shown. 
+	 */
     let history = useHistory();
 
+    /**
+	 * Navigate User to Signup page
+	 */
     const handleSignUpClick = () => {  
         history.push('/signup');
     } 
 
+    /**
+	 * Navigate User to Landing Page
+	 */
     const handleMainPageClick = () => {
         history.push('/');
     }
 
+    /**
+	 * Navigate User to Login Page
+	 */
     const handleLoginClick = () => {
         history.push('/login');
     }
 
+    /**
+	 * Navigate User to Practice
+	 */
     const handlePracticeClick = () => {
         history.push('/practice')
     }
 
+    /**
+	 * Navigate User to Profile Page
+	 */
     const handleProfileClick = () => {
         history.push('/dashboard')
+    }
+
+    /**
+	 * Navigate User to Sandbox Page
+	 */
+    const handleSandboxClick = () => {
+        history.push('/sandbox')
     }
 
     const handleLogoutClick = () => {
@@ -59,6 +85,7 @@ const NavBar = ({type}) => {
     }
         
     if (type === "loginMenu") {
+        // If user has not logged in
         return (
             <HStack spacing="20px" backgroundColor="#9AE6B4" height="7vh" paddingRight="20px" paddingLeft="20px" width="100%">
                 <HStack justifyContent="flex-start" width="50%">
@@ -77,6 +104,7 @@ const NavBar = ({type}) => {
         )
     }
     else {
+        // if user has logged in
         return (
             <HStack spacing="20px" backgroundColor="#9AE6B4" height="7vh" paddingRight="20px" paddingLeft="20px" width="100%">
                 <HStack justifyContent="flex-start" width="50%">
@@ -100,7 +128,7 @@ const NavBar = ({type}) => {
                             Practice
                             </MenuItem>
                             <MenuDivider/>
-                            <MenuItem minHeight="13vh" icon={<GiNotebook />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}}>
+                            <MenuItem minHeight="13vh" icon={<GiNotebook />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handleSandboxClick}>
                             Sandbox
                             </MenuItem>
                             <MenuDivider/>
