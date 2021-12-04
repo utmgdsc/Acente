@@ -6,7 +6,7 @@ import LoginForm from "../components/LoginForm";
 
 export const login = () => {
   return (
-    <Box id="loginPage" backgroundImage="background.png">
+    <Box id="loginPage" backgroundImage="/background.png">
       <NavBar type="loginMenu"/>
       <LoginForm title="Login" />
       <Footer />
