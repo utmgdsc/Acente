@@ -20,3 +20,9 @@ For the Frontend:
 ## Directory Structure
 The backend code can be found in `backend/` and the frontend code can be found in `frontend/`
 
+## Frontend Files
+Dashboard.js: Displays the user's accent profile. User can view their progress, strengths, weaknesses, and custom sentences they have created.
+Footer.js: Displays the Acente Footer.
+NavBar.js: Adaptive Navigation bar displays login and sign-up buttons if user has not logged in. After authentication, it displays the burger menu.
+Sandbox.js: User can create and practice on custom sentences.
+Test.js: User can practice on predefined sentences.
