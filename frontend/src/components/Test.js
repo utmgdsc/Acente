@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { HStack, VStack, Box, Center, Icon, Button } from "@chakra-ui/react";
 
-import { HiMicrophone } from "react-icons/hi";
-import {GrRefresh} from "react-icons/gr";
+import { HiMicrophone, HiRefresh } from "react-icons/hi";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
 import Sentence from "../components/Sentence";
 import VoiceHistory from "../components/VoiceHistory";
@@ -88,7 +87,7 @@ const Test = () => {
 				setSentence(response.data.sentence);
 			}
 		});
-	}
+	};
 
 	/**
 	 * Start recording
@@ -132,8 +131,8 @@ const Test = () => {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					uid: localStorage.getItem('uid'),
-                    message: base64AudioMessage,
+					uid: localStorage.getItem("uid"),
+					message: base64AudioMessage,
 					...sentence,
 				}),
 			}).then((res) => {
@@ -142,7 +141,14 @@ const Test = () => {
 						setConfidence(r.confidence);
 						setSentenceArr(r.sentence_arr);
 						setTextLoaded(true);
-						setAudioUrls([{url:audio.audioUrl, confidence:r.confidence, sentence_arr:r.sentence_arr}, ...audioUrls]);
+						setAudioUrls([
+							{
+								url: audio.audioUrl,
+								confidence: r.confidence,
+								sentence_arr: r.sentence_arr,
+							},
+							...audioUrls,
+						]);
 					});
 				} else {
 					console.log(
@@ -191,7 +197,8 @@ const Test = () => {
 							width="70px"
 							backgroundColor="#CBD5E0"
 							style={{
-								display: (disablePlayBtn && audio) ? "block" : "none",
+								display:
+									disablePlayBtn && audio ? "block" : "none",
 							}}
 							onClick={handlePlayButtonClick}
 						>
@@ -208,13 +215,13 @@ const Test = () => {
 							width="70px"
 							backgroundColor="#CBD5E0"
 							style={{
-								display: disableRecordBtn  ? "none" : "block",
+								display: disableRecordBtn ? "none" : "block",
 							}}
 							onClick={handleRecordButtonClick}
 						>
 							<Icon w={8} h={8} as={HiMicrophone} color="black" />
 						</Button>
-						
+
 						<Button
 							borderRadius="full"
 							height="70px"
@@ -239,7 +246,7 @@ const Test = () => {
 							backgroundColor="#CBD5E0"
 							onClick={handleRefreshButtonClick}
 						>
-							<Icon w={8} h={8} as={GrRefresh} color="black" />
+							<Icon w={8} h={8} as={HiRefresh} color="black" />
 						</Button>
 					</HStack>
 				</Box>
@@ -250,7 +257,11 @@ const Test = () => {
 					borderRadius="3xl"
 					padding="20px"
 				>
-					<Sentence confidence={confidence} sentence_arr={sentence_arr} textLoaded={textLoaded} />
+					<Sentence
+						confidence={confidence}
+						sentence_arr={sentence_arr}
+						textLoaded={textLoaded}
+					/>
 				</Box>
 			</VStack>
 			<VStack height="100%" width="30%">

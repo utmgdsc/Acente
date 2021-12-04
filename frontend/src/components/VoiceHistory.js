@@ -6,7 +6,6 @@ const VoiceHistory = ({ urls }) => {
 	/**
 	 * This component stores and renders past sentences and audio voice of users.
 	 */
-	console.log(urls);
 	const sources = urls.map((url) => {
 		return {
 			audio: new Audio(url.url),
@@ -86,6 +85,7 @@ const VoiceHistory = ({ urls }) => {
 				backgroundColor="#EDF2F7"
 				borderRadius="3xl"
 				padding="20px"
+				justifyContent="left"
 				style={{ overflow: "scroll" }}
 			>
 				{players.map((player, i) => (
@@ -97,16 +97,13 @@ const VoiceHistory = ({ urls }) => {
 };
 
 const Player = ({ player, toggle }) => (
-	<Center>
-		<Center
-			color="gray"
-			fontWeight="light"
-			fontSize="2xl"
-			justifyContent="left"
+	<HStack width="100%">
+		<HStack
+				width="90%"
 		>
 			<Sentence confidence={player.confidence} sentence_arr={player.sentence_arr} textLoaded={true} />
-		</Center>
-		<HStack spacing={2} align="right">
+		</HStack >
+		<HStack width="10%" >
 			<Button onClick={toggle}>
 				<Icon
 					w={8}
@@ -116,7 +113,7 @@ const Player = ({ player, toggle }) => (
 				/>
 			</Button>
 		</HStack>
-	</Center>
+	</HStack>
 );
 
 export default VoiceHistory;
