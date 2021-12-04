@@ -125,15 +125,17 @@ def userinfo():
             words = db.child("words").child(request.form['uid']).get().val().items()
             words = list(words)
             words.sort(key=lambda x: x[1])
-            return jsonify(uid={user.key(): user.val()}, words=words)
+            weakWords, strongWords = [], []
+            if(len(words) >= 10):
+                weakWords = words[:5]
+                strongWords = words[-1:-6:-1]
+            return jsonify(uid={user.key(): user.val()}, weakWords=weakWords, strongWords = strongWords)
         except Exception as e:
             print(e)
     # invalid uid or token
     return make_response(jsonify(message='Error cannot retrieve user information'), 400)
 
 # Api route to sign up a new user
-
-
 @app.route('/api/signup', methods=["POST"])
 def signup():
     data = {
@@ -208,6 +210,14 @@ def random_sentence_generator():
         return jsonify(sentence=ls[random.choice(list(ls))])
     except:
         return make_response(jsonify(message='Cannot fetch a sentence'), 400)
+
+# grab user's recent sentences
+@app.route('api/recentSentences', methods=["GET"])
+def recent_sentence_generator():
+    try:
+        sentences = db.child("words").child(request.form['uid']).get().val().items()
+    except:
+        return make_response(jsonify(message='Cannot fetch sentences'), 400)
 
 
 @app.route('/api/logout', methods=["POST"])
