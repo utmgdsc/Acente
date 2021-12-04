@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { HStack, VStack, Box, Center, Icon, Button, Skeleton } from "@chakra-ui/react";
 
 import { HiMicrophone } from "react-icons/hi";
+import {GrRefresh} from "react-icons/gr";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
 import VoiceHistory from "../components/VoiceHistory";
 
@@ -66,6 +67,17 @@ const Test = () => {
 			}
 		});
 	}, []);
+
+	const handleRefreshButtonClick = () => {
+		axios({
+			method: "GET",
+			url: "http://127.0.0.1:5000/api/randomSentenceGenerator",
+		}).then(function (response) {
+			if (response.status === 200) {
+				setSentence(response.data.sentence);
+			}
+		});
+	}
 
 	const handleRecordButtonClick = async () => {
 		if (!recorder) {
@@ -180,6 +192,7 @@ const Test = () => {
 						>
 							<Icon w={8} h={8} as={HiMicrophone} color="black" />
 						</Button>
+						
 						<Button
 							borderRadius="full"
 							height="70px"
@@ -196,6 +209,15 @@ const Test = () => {
 								as={BsFillStopFill}
 								color="black"
 							/>
+						</Button>
+						<Button
+							borderRadius="full"
+							height="70px"
+							width="70px"
+							backgroundColor="#CBD5E0"
+							onClick={handleRefreshButtonClick}
+						>
+							<Icon w={8} h={8} as={GrRefresh} color="black" />
 						</Button>
 						{/* <button id="record" onClick={handleRecordButtonClick}>Record</button>
                     <button id="stop" onClick={handleStopButtonClick}>Stop</button>
