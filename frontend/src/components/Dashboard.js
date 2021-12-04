@@ -4,6 +4,9 @@ import {
   } from "@chakra-ui/react"
 
 const Dashboard = () => {
+    /**
+	 * The Dashboard component displays the User's Accent profile, including their strengths, weaknesses, and custom sentences.
+	 */
     return (
         <VStack height="86vh" justifyContent="center" spacing="20px">
             <HStack width="100%" paddingLeft="50px" paddingRight="50px">

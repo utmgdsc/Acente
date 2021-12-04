@@ -8,10 +8,14 @@ import VoiceHistory from "../components/VoiceHistory";
 
 const axios = require("axios");
 
+// Global recorder variable stores audio file and current audio state
 let recorder;
 let audio;
 
 const recordAudio = () =>
+	/**
+	 * This component provides functionality for recording, stopping, playing and saving audio
+	 */
 	new Promise(async (resolve) => {
 		const stream = await navigator.mediaDevices.getUserMedia({
 			audio: true,
@@ -50,6 +54,9 @@ const recordAudio = () =>
 	});
 
 const Test = () => {
+	/**
+	 * This component displays the practice page where users can practice on preset sentences
+	 */
 	const [disableRecordBtn, setDisableRecordBtn] = useState(false);
 	const [disablePlayBtn, setDisablePlayBtn] = useState(false);
 	const [textLoaded, setTextLoaded] = useState(false);
@@ -57,7 +64,9 @@ const Test = () => {
 	const [confidence, setConfidence] = useState([]);
 	const [sentence_arr, setSentenceArr] = useState([]);
 	const [audioUrls, setAudioUrls] = useState([]);
+
 	useEffect(() => {
+		// On load, grab a randomized sentence from the database
 		axios({
 			method: "GET",
 			url: "http://127.0.0.1:5000/api/randomSentenceGenerator",
@@ -69,6 +78,7 @@ const Test = () => {
 	}, []);
 
 	const handleRefreshButtonClick = () => {
+		// Refresh button grabs a new sentence from the database
 		axios({
 			method: "GET",
 			url: "http://127.0.0.1:5000/api/randomSentenceGenerator",
@@ -79,6 +89,9 @@ const Test = () => {
 		});
 	}
 
+	/**
+	 * Start recording
+	 */
 	const handleRecordButtonClick = async () => {
 		if (!recorder) {
 			recorder = await recordAudio();
@@ -88,6 +101,9 @@ const Test = () => {
 		setDisablePlayBtn(false);
 	};
 
+	/**
+	 * Stop recording, and save audio
+	 */
 	const handleStopButtonClick = async () => {
 		audio = await recorder.stop();
 		setAudioUrls([{sentence: sentence.sentence, url:audio.audioUrl}, ...audioUrls]);
@@ -95,10 +111,16 @@ const Test = () => {
 		setDisableRecordBtn(false);
 	};
 
+	/**
+	 * Playback audio recording to the user
+	 */
 	const handlePlayButtonClick = () => {
 		audio.play();
 	};
 
+	/**
+	 * Save audio recording, and send it to the backend for parsing
+	 */
 	const handleSaveButtonClick = () => {
 		const reader = new FileReader();
 		reader.readAsDataURL(audio.audioBlob);
@@ -219,10 +241,6 @@ const Test = () => {
 						>
 							<Icon w={8} h={8} as={GrRefresh} color="black" />
 						</Button>
-						{/* <button id="record" onClick={handleRecordButtonClick}>Record</button>
-                    <button id="stop" onClick={handleStopButtonClick}>Stop</button>
-                    <button id="play" onClick={handlePlayButtonClick}>Play</button>
-                    <button id="save" onClick={handleSaveButtonClick}>Save</button> */}
 					</HStack>
 				</Box>
 				<Box

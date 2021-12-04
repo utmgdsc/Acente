@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	HStack,
 	VStack,
@@ -22,12 +22,16 @@ import { HiMicrophone } from "react-icons/hi";
 import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
 import VoiceHistory from "../components/VoiceHistory";
 
-const axios = require("axios");
-
+// Global recorder variable stores audio file and current audio state
 let recorder;
 let audio;
 
+const axios = require("axios");
+
 const recordAudio = () =>
+	/**
+	 * This component provides functionality for recording, stopping, playing and saving audio
+	 */
 	new Promise(async (resolve) => {
 		const stream = await navigator.mediaDevices.getUserMedia({
 			audio: true,
@@ -66,30 +70,22 @@ const recordAudio = () =>
 	});
 
 const Sandbox = () => {
+	/**
+	 * This component displays the sandbox page where users can type custom sentences and practice on them
+	 */
 	const [disableRecordBtn, setDisableRecordBtn] = useState(false);
 	const [disablePlayBtn, setDisablePlayBtn] = useState(false);
 	const [textLoaded, setTextLoaded] = useState(false);
-	const [sentence, setSentence] = useState({ sentence: "", id: "0" });
+	const [sentence, setSentence] = useState({ sentence: "Avocados are an excellent source of protein and fat", id: "0" });
 	const [confidence, setConfidence] = useState([]);
 	const [sentence_arr, setSentenceArr] = useState([]);
 	const [sentenceUpdate, setSentenceUpdate] = useState("");
 	const [audioUrls, setAudioUrls] = useState([]);
-	// const [isReadOnly, setReadOnly] = useState(false);
-
-	// useEffect(() => {
-	// 	axios({
-	// 		method: "GET",
-	// 		url: "http://127.0.0.1:5000/api/randomSentenceGenerator",
-	// 	}).then(function (response) {
-	// 		if (response.status === 200) {
-	// 			setSentence(response.data.sentence);
-	// 		}
-	// 	});
-	// }, []);
-
-	const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 	function EditableControls() {
+		/**
+		 * Controls for editing sentence
+		 */
 		const {
 			isEditing,
 			getSubmitButtonProps,
@@ -98,25 +94,17 @@ const Sandbox = () => {
 		} = useEditableControls();
 
 		const handleCheckClick = () => {
-			setSentence({ sentence: sentenceUpdate, id: "0" });
+			setSentence({sentence: sentenceUpdate, id:"0"});
 		};
 
 		return isEditing ? (
 			<ButtonGroup justifyContent="center" size="lg">
-				<IconButton
-					icon={<CheckIcon />}
-					onClick={handleCheckClick}
-					{...getSubmitButtonProps()}
-				/>
+				<IconButton icon={<CheckIcon />} onClick={handleCheckClick}{...getSubmitButtonProps()}/>
 				<IconButton icon={<CloseIcon />} {...getCancelButtonProps()} />
 			</ButtonGroup>
 		) : (
 			<Flex justifyContent="center">
-				<IconButton
-					size="lg"
-					icon={<EditIcon />}
-					{...getEditButtonProps()}
-				/>
+				<IconButton size="lg" icon={<EditIcon />} {...getEditButtonProps()}/>
 			</Flex>
 		);
 	}
@@ -125,6 +113,9 @@ const Sandbox = () => {
 		setSentenceUpdate(event);
 	};
 
+	/**
+	 * Start recording
+	 */
 	const handleRecordButtonClick = async () => {
 		if (!recorder) {
 			recorder = await recordAudio();
@@ -134,8 +125,10 @@ const Sandbox = () => {
 		setDisablePlayBtn(false);
 	};
 
+	/**
+	 * Stop recording, and save audio
+	 */
 	const handleStopButtonClick = async () => {
-		console.log(recorder);
 		audio = await recorder.stop();
 		setAudioUrls([
 			{ sentence: sentence.sentence, url: audio.audioUrl },
@@ -145,10 +138,16 @@ const Sandbox = () => {
 		setDisableRecordBtn(false);
 	};
 
+	/**
+	 * Play audio recording
+	 */
 	const handlePlayButtonClick = () => {
 		audio.play();
 	};
 
+	/**
+	 * Save audio recording, and send it to the backend for parsing
+	 */
 	const handleSaveButtonClick = () => {
 		const reader = new FileReader();
 		reader.readAsDataURL(audio.audioBlob);
@@ -203,11 +202,11 @@ const Sandbox = () => {
 						fontSize="3xl"
 						justifyContent="left"
 						textAlign="center"
-						defaultValue="Pineapples belong on pizza"
+						defaultValue={sentence.sentence}
 						isPreviewFocusable={false}
 						onChange={handleSentenceUpdate}
 						onSubmit={() =>
-							setSentence({ sentence: sentenceUpdate, id: "0" })
+							setSentence({sentence: sentenceUpdate, id: "0"})
 						}
 					>
 						<EditablePreview />
