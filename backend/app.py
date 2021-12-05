@@ -88,7 +88,7 @@ def messages():
     """
     Function to parse user's words using the GCP model to then generate feedback and metrics.
     """
-    if not(request.form.get('uid', None) or request.form.get('token', None)):
+    if not(request.form.get('uid', None) and request.form.get('token', None)):
         # invalid uid or token
         return make_response(jsonify(message='Error cannot retrieve user information'), 400)
     byte_data = base64.b64decode(request.json['message'])
