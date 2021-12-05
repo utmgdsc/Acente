@@ -1,43 +1,34 @@
 import "./App.css";
 import { ChakraProvider } from "@chakra-ui/react";
-import { IntlProvider } from "react-intl";
-import en from "./languages/en.json";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
+import { LanguageRouter } from "./i18n/components/LanguageRouter";
+import { LocalizedSwitch } from "./i18n/components/LocalizedSwitch";
 import Landing from "./views/landing";
 import login from "./views/login";
 import signup from "./views/signup";
 import dashboard from "./views/dashboard";
 import practice from "./views/practice";
+import sandbox from "./views/sandbox";
 
 function App() {
 	return (
 		<ChakraProvider>
-			<IntlProvider locale="en" messages={en}>
-				<BrowserRouter>
-					<Switch>
+				<LanguageRouter>
+				<LocalizedSwitch>
 						<Route exact path="/" component={Landing} />
-					</Switch>
-					<Switch>
 						<Route exact path="/signup" component={signup} />
-					</Switch>
-					<Switch>
 						<Route exact path="/login" component={login} />
-					</Switch>
           {localStorage.getItem("uid") &&
-					<Switch>
-						<Route exact path="/dashboard" component={dashboard} />
-					</Switch>}
+						<Route exact path="/dashboard" component={dashboard} />}
           {localStorage.getItem("uid") &&
-					<Switch>
-						<Route exact path="/practice" component={practice} />
-					</Switch>}
+						<Route exact path="/practice" component={practice} />}
+          {localStorage.getItem("uid") &&
+          <Route exact path="/sandbox" component={sandbox} />}
           {!localStorage.getItem("uid") &&
-          <Switch>
 						<Redirect to={'/login'} />
-					</Switch>
           }
-				</BrowserRouter>
-			</IntlProvider>
+					</LocalizedSwitch>
+				</LanguageRouter>
 		</ChakraProvider>
 	);
 }
