@@ -1,34 +1,52 @@
 import "./App.css";
+import { React, useEffect, useState } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Route, Redirect } from "react-router-dom";
 import { LanguageRouter } from "./i18n/components/LanguageRouter";
 import { LocalizedSwitch } from "./i18n/components/LocalizedSwitch";
 import Landing from "./views/landing";
-import login from "./views/login";
-import signup from "./views/signup";
-import dashboard from "./views/dashboard";
-import practice from "./views/practice";
-import sandbox from "./views/sandbox";
+import Login from "./views/login";
+import Signup from "./views/signup";
+import Dashboard from "./views/dashboard";
+import Practice from "./views/practice";
+import Sandbox from "./views/sandbox";
 
 function App() {
+	const [isLoggedIn, setLoggedIn] = useState(false);
+	useEffect(() => {
+		setLoggedIn(localStorage.getItem("username") !== null);
+	}, [localStorage.getItem("username")]);
 	return (
 		<ChakraProvider>
-				<LanguageRouter>
+			<LanguageRouter>
 				<LocalizedSwitch>
-						<Route exact path="/" component={Landing} />
-						<Route exact path="/signup" component={signup} />
-						<Route exact path="/login" component={login} />
-          {localStorage.getItem("uid") &&
-						<Route exact path="/dashboard" component={dashboard} />}
-          {localStorage.getItem("uid") &&
-						<Route exact path="/practice" component={practice} />}
-          {localStorage.getItem("uid") &&
-          <Route exact path="/sandbox" component={sandbox} />}
-          {!localStorage.getItem("uid") &&
-						<Redirect to={'/login'} />
-          }
-					</LocalizedSwitch>
-				</LanguageRouter>
+					<Route exact path="/" component={Landing} />
+					<Route
+						exact
+						path="/signup"
+						render={(props) => (
+							<Signup {...props} updateUsername={setLoggedIn} />
+						)}
+					/>
+					<Route
+						exact
+						path="/login"
+						render={(props) => (
+							<Login {...props} updateUsername={setLoggedIn} />
+						)}
+					/>
+					{isLoggedIn && (
+						<Route exact path="/dashboard" component={Dashboard} />
+					)}
+					{isLoggedIn && (
+						<Route exact path="/practice" component={Practice} />
+					)}
+					{isLoggedIn && (
+						<Route exact path="/sandbox" component={Sandbox} />
+					)}
+					{!isLoggedIn && <Redirect to={"/login"} />}
+				</LocalizedSwitch>
+			</LanguageRouter>
 		</ChakraProvider>
 	);
 }
