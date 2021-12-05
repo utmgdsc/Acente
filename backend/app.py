@@ -132,8 +132,8 @@ def userinfo():
             recentSentences = recent_sentence_grabber(request.form['uid'])
             return jsonify(uid={user.key(): user.val()}, weakWords=weakWords, 
                            strongWords=strongWords, recentSentences=recentSentences)
-        except Exception as e:
-            print(e)
+        except:
+            pass
     # invalid uid or token
     return make_response(jsonify(message='Error cannot retrieve user information'), 400)
 
@@ -223,7 +223,6 @@ def recent_sentence_grabber(uid):
     recent_sentences = []
     for [id, score] in recent_sentence_ids:
         recent_sentences.append(ls[id])
-    print(recent_sentences)
     return recent_sentences
 
 
