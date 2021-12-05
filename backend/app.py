@@ -88,6 +88,9 @@ def messages():
     """
     Function to parse user's words using the GCP model to then generate feedback and metrics.
     """
+    if not(request.json.get('uid', None) and request.json.get('token', None)):
+        # invalid uid or token
+        return make_response(jsonify(message='Error cannot retrieve user information'), 400)
     byte_data = base64.b64decode(request.json['message'])
     audio_mp3 = speech.RecognitionAudio(content=byte_data)
     config_mp3 = speech.RecognitionConfig(
@@ -103,11 +106,11 @@ def messages():
         config=config_mp3,
         audio=audio_mp3
     )
+    user_id, token = request.json['uid'], request.json['token']
     words = []
     confidence = []
     sentence_arr = request.json['sentence'].split(" ")
     sentence_id = request.json['id']
-    user_id = request.json['uid']
     sen_confidence = 0
     for result in response.results:
         sen_confidence = result.alternatives[0].confidence
@@ -118,19 +121,17 @@ def messages():
     if not request.json.get('sandbox', None):
         def find_avg(x, y):  # Weighted average for user's progress
             return (x*5+y*2)/7
-        prev = db.child('voice-data').child(user_id).child(sentence_id).get()
+        prev = db.child('voice-data').child(user_id).child(sentence_id).get(token)
         if prev.val():
             sen_confidence = find_avg(prev.val(), sen_confidence)
-        db.child(
-            'voice-data').child(user_id).update({sentence_id: sen_confidence})
+        db.child('voice-data').child(user_id).update({sentence_id: sen_confidence}, token)
         data = {}
         for i, word_confidence in enumerate(arr1):
-            prev = db.child('words').child(user_id).child(sentence_id).get()
+            prev = db.child('words').child(user_id).child(sentence_id).get(token)
             if prev.val():
                 word_confidence = find_avg(prev.val(), word_confidence)
-            data[sentence_arr[i].replace(
-                ".", "").strip(',?!')] = word_confidence
-        db.child('words').child(user_id).update(data)
+            data[sentence_arr[i].replace(".", "").strip(',?!')] = word_confidence
+        db.child('words').child(user_id).update(data, token)
     return make_response(jsonify(confidence=arr2, sentence_arr=sentence_arr))
 
 
@@ -140,28 +141,23 @@ def userinfo():
     Gets required information about user for dashboard metrics
     """
     if (request.form.get('uid', None) and request.form.get('token', None)):
+        uid, token = request.form['uid'], request.form['token']
         try:
             auth.current_user = session.get("email", auth.current_user)
-            try:
-
-                user = db.child("users").child(
-                    request.form['uid']).get(request.form['token'])
-                words = db.child("words").child(
-                    request.form['uid']).get().val().items()
-                words = [x[0] for x in sorted(list(words), key=lambda x: x[1])]
-                if(len(words) >= 10):
-                    weakWords = words[:5]
-                    strongWords = words[-1:-6:-1]
-                else:
-                    raise Exception
-            except:
-                strongWords = ["practice", "more", "words", "to", "see"]
-                weakWords = ["personalized", "metrics", "data", "displayed", "here"]
-            recentSentences = recent_sentence_grabber(request.form['uid'])
-            return jsonify(uid={user.key(): user.val()}, weakWords=weakWords,
-                           strongWords=strongWords, recentSentences=recentSentences)
+            user = db.child("users").child(uid).get(token)
+            words = db.child("words").child(uid).get(token).val().items()
+            words = [x[0] for x in sorted(list(words), key=lambda x: x[1])]
+            if(len(words) >= 10):
+                weakWords = words[:5]
+                strongWords = words[-1:-6:-1]
+            else:
+                raise Exception
         except:
-            pass
+            strongWords = ["practice", "more", "words", "to", "see"]
+            weakWords = ["personalized", "metrics", "data", "displayed", "here"]
+        recentSentences = recent_sentence_grabber(uid, token)
+        return jsonify(uid={user.key(): user.val()}, weakWords=weakWords,
+                        strongWords=strongWords, recentSentences=recentSentences)
     # invalid uid or token
     return make_response(jsonify(message='Error cannot retrieve user information'), 400)
 
@@ -234,12 +230,12 @@ def random_sentence_generator():
         return make_response(jsonify(message='Cannot fetch a sentence'), 400)
 
 
-def recent_sentence_grabber(uid):
+def recent_sentence_grabber(uid, token):
     """
     Helper function for user_info to grab user's recent sentences
     """
     try:
-        sentences = db.child("voice-data").child(uid).get().val().items()
+        sentences = db.child("voice-data").child(uid).get(token).val().items()
         sentence_ids = [x[0] for x in sentences]
         if len(sentences) >= 5:
             recent_sentence_ids = random.sample(sentence_ids, 5)
