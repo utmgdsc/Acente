@@ -11,6 +11,9 @@ import {
 	Image,
 } from "@chakra-ui/react";
 export const landing = (props) => {
+	/**
+	 * This component is the main page for visitors and has different views based on user's authentication.
+	 */
 	let history = props.history;
 	const handleSignUpClick = () => {
 		history.push("/signup");
