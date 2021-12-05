@@ -53,7 +53,6 @@ const SignUpForm = () => {
       changeSubmitError("It seems like you've already signed up. Try logging in!");
     })
     .catch(function (error) {
-      console.log(error); // TODO: remove console.log for all prod code
       changeSubmitError("It seems like you've already signed up. Try logging in!"); 
     });
   }

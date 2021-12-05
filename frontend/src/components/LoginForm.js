@@ -50,7 +50,7 @@ const LoginForm = ({title}) => {
     })
     // display popup
     .catch(function (error) {
-      console.log(error); // TODO: remove console.log for all prod code
+
       changeSubmitError('Invalid email or password');
     });
   }

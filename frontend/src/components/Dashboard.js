@@ -1,31 +1,57 @@
-import React from 'react'
-import {HStack, VStack, Box, Center, ListItem, UnorderedList} from "@chakra-ui/react"  
-import { useIntl } from 'react-intl'
-
-const axios = require('axios');
-
-function loadWeakWords() {
-  axios({
-      method: 'POST',
-      url: 'http://127.0.0.1:5000/api/weakwords',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-          uid: localStorage.getItem('uid'),
-      }),
-  })
-  .then(function (response) {
-    if(response.status === 200){
-    }
-  })
-  .catch(function (error) {
-  });
-}
+import {useEffect, useState, React} from 'react'
+import {
+    HStack, VStack, Box, Center, ListItem, UnorderedList, Layout} from "@chakra-ui/react"
+import axios from "axios"
+import { useIntl } from 'react-intl';
 
 const Dashboard = () => {
-    /**
-	 * The Dashboard component displays the User's Accent profile, including their strengths, weaknesses, and custom sentences.
-	 */
+    const [isLoading, setIsLoading] = useState(true);
+    const [strongWords, setStrongWords] = useState([]);
+    const [weakWords, setWeakWords] = useState([])
+    const [recentSentences, setRecentSentences] = useState([]);
+    useEffect(() => {
+        getData();
+    }, [])
+
     const { formatMessage } = useIntl();
+
+    const getData = () => {
+        let bodyFormData = new FormData();
+        bodyFormData.append('uid', localStorage.getItem('uid'));
+        bodyFormData.append('token', localStorage.getItem('token'));
+        axios({
+            method: 'POST',
+            url: 'http://127.0.0.1:5000/api/userinfo',
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then(async function (response) {
+            setIsLoading(false);
+            if(response.status === 200){
+                const result = await response;
+                const { strongWords: resStrongWords, weakWords: resWeakWorks, recentSentences: resRecent } = result.data;
+                var strongWords = [];
+                var weakWords = [];
+                var recentSentences = [];
+                for(let i = 0; i < resStrongWords.length; i++){
+                    strongWords.push(resStrongWords[i][0])
+                    weakWords.push(resWeakWorks[i][0])
+                }
+                for(let i = 0; i < resRecent.length; i++){
+                    recentSentences.push(resRecent[i].sentence)
+                }
+                setStrongWords(strongWords);
+                setWeakWords(weakWords);
+                setRecentSentences(recentSentences);
+                console.log('test');
+            }
+        })
+        .catch(function (error) {
+            setIsLoading(false);
+            console.log("An error happened",error);
+        });
+    }
+    const content = isLoading ? <div>Loading...</div> : <div>Data ...</div>
     return (
         <VStack height="86vh" justifyContent="center" spacing="20px">
             <HStack width="100%" paddingLeft="50px" paddingRight="50px">
@@ -44,22 +70,20 @@ const Dashboard = () => {
                 <Box height="100%" width="33%" backgroundColor="#EDF2F7" borderRadius="3xl" padding="20px">
                     <Center fontSize="3xl" color="gray" justifyContent="left">{formatMessage({id: "strengths"})}</Center>
                     <UnorderedList spacing="10px">
-                        <ListItem>Your strongest words are bird, apple, and hello</ListItem>
+                        {strongWords.map(word => <ListItem>{word}</ListItem>)}
                     </UnorderedList>
+                    {/* <div><pre>{JSON.stringify(strongWords, null, 2)}</pre></div> */}
                 </Box>
                 <Box height="100%" width="33%" backgroundColor="#EDF2F7" borderRadius="3xl" padding="20px">
                     <Center fontSize="3xl" color="gray" justifyContent="left">{formatMessage({id: "weaknesses"})}</Center>
                     <UnorderedList spacing="10px">
-                        <ListItem>Your need to practise your sentence fluency</ListItem>
-                        <ListItem>Your weakness is pronouncing words with 'uh' and 'ah' </ListItem>
+                        {weakWords.map(word => <ListItem>{word}</ListItem>)}
                     </UnorderedList>
                 </Box>
                 <Box height="100%" width="33%" backgroundColor="#EDF2F7" borderRadius="3xl" padding="20px">
                     <Center fontSize="3xl" color="gray" justifyContent="left">{formatMessage({id: "custom"})}</Center>
                     <UnorderedList spacing="10px">
-                        <ListItem>Peter Piper picked a peck of pickled peppers</ListItem>
-                        <ListItem>I'm quite good at tennis but I need to practise my serve</ListItem>
-                        <ListItem>Good morning, I would like to order a regular coffee and everything bagel</ListItem>
+                        {recentSentences.map(word => <ListItem>{word}</ListItem>)}
                     </UnorderedList>
                 </Box>
             </HStack>
