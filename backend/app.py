@@ -26,15 +26,15 @@ Session(app)
 # # #Enable CORs
 cors = CORS(app)
 
-# Connect to Firebase Realtime DB
-firebase = pyrebase.initialize_app(json.load(open('secrets.json')))
+# # Connect to Firebase Realtime DB
+firebase = pyrebase.initialize_app(json.loads(os.environ.get('secrets.json')))
 auth = firebase.auth()
 # Authenticate Firebase tables
 db = firebase.database()
 
 # Firestore Setup
 # Use a service account
-cred = credentials.Certificate('fireStoreKey.json')
+cred = credentials.Certificate(json.loads(os.environ.get('fireStoreKey.json')))
 firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
@@ -53,7 +53,7 @@ POOR = 2
 
 cors = CORS(app)
 # service key required to access google cloud services
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json"
+# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json"
 speech_client = speech.SpeechClient()
 
 
