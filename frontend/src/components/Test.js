@@ -138,7 +138,7 @@ const Test = () => {
 					uid: localStorage.getItem("uid"),
 					token: localStorage.getItem("token"),
 					message: base64AudioMessage,
-					...sentence,
+					...sentence
 				}),
 			}).then((res) => {
 				if (res.status === 200) {
