@@ -3,7 +3,6 @@ import {
     HStack, VStack, Box, Center, ListItem, UnorderedList, Layout} from "@chakra-ui/react"
 import axios from "axios"
 import { useIntl } from 'react-intl';
-
 const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [strongWords, setStrongWords] = useState([]);
@@ -12,9 +11,7 @@ const Dashboard = () => {
     useEffect(() => {
         getData();
     }, [])
-
     const { formatMessage } = useIntl();
-
     const getData = () => {
         let bodyFormData = new FormData();
         bodyFormData.append('uid', localStorage.getItem('uid'));
@@ -30,25 +27,17 @@ const Dashboard = () => {
             if(response.status === 200){
                 const result = await response;
                 const { strongWords: resStrongWords, weakWords: resWeakWorks, recentSentences: resRecent } = result.data;
-                var strongWords = [];
-                var weakWords = [];
                 var recentSentences = [];
-                for(let i = 0; i < resStrongWords.length; i++){
-                    strongWords.push(resStrongWords[i][0])
-                    weakWords.push(resWeakWorks[i][0])
-                }
                 for(let i = 0; i < resRecent.length; i++){
                     recentSentences.push(resRecent[i].sentence)
                 }
-                setStrongWords(strongWords);
-                setWeakWords(weakWords);
+                setStrongWords(resStrongWords);
+                setWeakWords(resWeakWorks);
                 setRecentSentences(recentSentences);
-                console.log('test');
             }
         })
         .catch(function (error) {
             setIsLoading(false);
-            console.log("An error happened",error);
         });
     }
     const content = isLoading ? <div>Loading...</div> : <div>Data ...</div>
@@ -72,7 +61,6 @@ const Dashboard = () => {
                     <UnorderedList spacing="10px">
                         {strongWords.map(word => <ListItem>{word}</ListItem>)}
                     </UnorderedList>
-                    {/* <div><pre>{JSON.stringify(strongWords, null, 2)}</pre></div> */}
                 </Box>
                 <Box height="100%" width="33%" backgroundColor="#EDF2F7" borderRadius="3xl" padding="20px">
                     <Center fontSize="3xl" color="gray" justifyContent="left">{formatMessage({id: "weaknesses"})}</Center>

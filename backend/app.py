@@ -82,6 +82,7 @@ def parse_output(sentence_arr, gcp_output_words, gcp_output_confidence):
 
     return confidence_arr, confidence_levels
 
+
 @app.route("/messages", methods=["POST"])
 @cross_origin()
 def messages():
@@ -133,29 +134,41 @@ def messages():
         db.child('words').child(user_id).update(data)
     return make_response(jsonify(confidence=arr2, sentence_arr=sentence_arr))
 
-# Api route to get user data
-
 
 @app.route('/api/userinfo', methods=["POST"])
 def userinfo():
+    """
+    Gets required information about user for dashboard metrics
+    """
     if (request.form.get('uid', None) and request.form.get('token', None)):
         try:
             auth.current_user = session.get("email", auth.current_user)
-            user = db.child("users").child(request.form['uid']).get(request.form['token'])
-            words = db.child("words").child(request.form['uid']).get().val().items()
-            words = list(words)
-            words.sort(key=lambda x: x[1])
-            weakWords, strongWords = [], []
-            if(len(words) >= 10):
-                weakWords = words[:5]
-                strongWords = words[-1:-6:-1]
-            return jsonify(uid={user.key(): user.val()}, weakWords=weakWords, strongWords=strongWords)
-        except Exception as e:
-            print(e)
+            try:
+
+                user = db.child("users").child(
+                    request.form['uid']).get(request.form['token'])
+                words = db.child("words").child(
+                    request.form['uid']).get().val().items()
+                words = [x[0] for x in sorted(list(words), key=lambda x: x[1])]
+                if(len(words) >= 10):
+                    weakWords = words[:5]
+                    strongWords = words[-1:-6:-1]
+                else:
+                    raise Exception
+            except:
+                strongWords = ["practice", "more", "words", "to", "see"]
+                weakWords = ["personalized", "metrics", "data", "displayed", "here"]
+            recentSentences = recent_sentence_grabber(request.form['uid'])
+            return jsonify(uid={user.key(): user.val()}, weakWords=weakWords,
+                           strongWords=strongWords, recentSentences=recentSentences)
+        except:
+            pass
     # invalid uid or token
     return make_response(jsonify(message='Error cannot retrieve user information'), 400)
 
 # Api route to sign up a new user
+
+
 @app.route('/api/signup', methods=["POST"])
 def signup():
     """
@@ -221,23 +234,26 @@ def random_sentence_generator():
     except:
         return make_response(jsonify(message='Cannot fetch a sentence'), 400)
 
-# grab user's recent sentences
-@app.route('/api/recentSentences', methods=["POST"])
-def recent_sentence_grabber():
-    if (request.form.get('uid', None) and request.form.get('token', None)):
-        try:
-            sentences = db.child("voice-data").child(request.form['uid']).get().val().items()
-            sentence_ids = list(sentences)
-            if len(sentences) >= 5:
-                recent_sentence_ids = random.sample(sentence_ids, 5)
+
+def recent_sentence_grabber(uid):
+    """
+    Helper function for user_info to grab user's recent sentences
+    """
+    try:
+        sentences = db.child("voice-data").child(uid).get().val().items()
+        sentence_ids = [x[0] for x in sentences]
+        if len(sentences) >= 5:
+            recent_sentence_ids = random.sample(sentence_ids, 5)
             recent_sentences = []
-            for [id, score] in recent_sentence_ids:
-                recent_sentences.append(ls[id])
-            return make_response(jsonify(recentSentences=recent_sentences))
-        except:
-            return make_response(jsonify(message='Cannot fetch sentences'), 400)
-    # invalid uid
-    return make_response(jsonify(message='Error: cannot retrieve user information'), 400)
+        else:
+            raise Exception
+    except:
+        recent_sentence_ids = random.sample(list(ls), 4)
+        recent_sentences = [{"id": 0, "sentence":"Practice more to see tailored sentences below"}]
+
+    for id in recent_sentence_ids:
+        recent_sentences.append(ls[id])
+    return recent_sentences
 
 
 @app.route('/api/logout', methods=["POST"])
