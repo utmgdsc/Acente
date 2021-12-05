@@ -49,7 +49,8 @@ def parse_output(sentence_arr, gcp_output_words, gcp_output_confidence):
     confidence_arr = []
     confidence_levels = []
     index = 0
-    for word in sentence_arr:
+    for w in sentence_arr:
+        word = w.lower()
         if word in gcp_output_words[index:]:
             index = gcp_output_words.index(word, index)
             confidence_arr.append(gcp_output_confidence[index])
@@ -87,7 +88,7 @@ def messages():
     )
     words = []
     confidence = []
-    sentence_arr = request.json['sentence'].lower().split(" ")
+    sentence_arr = request.json['sentence'].split(" ")
     sentence_id = request.json['id']
     user_id = request.json['uid']
     sen_confidence = 0
