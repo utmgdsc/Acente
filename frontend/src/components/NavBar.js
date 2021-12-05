@@ -113,7 +113,7 @@ const NavBar = ({type}) => {
         return (
             <HStack spacing="20px" backgroundColor="#9AE6B4" height="7vh" paddingRight="20px" paddingLeft="20px" width="100%">
                 <HStack justifyContent="flex-start" width="50%">
-                    <IconButton colorScheme="green" onClick={handleMainPageClick} aria-label="Acente Logo" backgroundColor="#9AE6B4" icon={<Img maxWidth="100%" maxHeight="100%" src="/AcenteIcon.png"/>}/>
+                    <IconButton colorScheme="green" onClick={handleMainPageClick} aria-label="Acente Logo" backgroundColor="#9AE6B4" icon={<Img maxWidth="100%" maxHeight="100%" src="/acenteIcon.png"/>}/>
                 </HStack>
 
                 <HStack justifyContent="flex-end" width="50%">
