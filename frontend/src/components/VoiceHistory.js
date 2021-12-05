@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
+import { BsFillPauseBtnFill, BsFillPlayBtnFill } from "react-icons/bs";
 import { HStack, VStack, Box, Center, Icon, Button } from "@chakra-ui/react";
 import Sentence from "../components/Sentence";
 const VoiceHistory = ({ urls }) => {
 	/**
 	 * This component stores and renders past sentences and audio voice of users.
 	 */
-	const sources = urls.map((url) => {
-		return {
-			audio: new Audio(url.url),
-			url: url.url,
-		};
-	});
 	const [players, setPlayers] = useState(
 		urls.map((url) => {
 			return {
 				...url,
 				playing: false,
+			};
+		})
+	);
+	const [sources, setSources] = useState(
+		urls.map((url) => {
+			return {
+				audio: new Audio(url.url),
+				url: url.url,
 			};
 		})
 	);
@@ -29,6 +31,14 @@ const VoiceHistory = ({ urls }) => {
 				};
 			})
 		);
+		setSources(
+			urls.map((url) => {
+				return {
+					audio: new Audio(url.url),
+					url: url.url,
+				};
+			})
+		);
 	}, [urls]);
 	const toggle = (targetIndex) => () => {
 		/* Toggle function to show diff button and control audio players
@@ -37,15 +47,11 @@ const VoiceHistory = ({ urls }) => {
 		const currentIndex = players.findIndex((p) => p.playing === true);
 		if (currentIndex !== -1 && currentIndex !== targetIndex) {
 			newPlayers[currentIndex].playing = false;
-			sources[currentIndex].audio.pause();
-			sources[targetIndex].audio.play();
 			newPlayers[targetIndex].playing = true;
 		} else if (currentIndex !== -1) {
 			newPlayers[targetIndex].playing = false;
-			sources[targetIndex].audio.pause();
 		} else {
 			newPlayers[targetIndex].playing = true;
-			sources[targetIndex].audio.play();
 		}
 		setPlayers(newPlayers);
 	};
@@ -56,6 +62,7 @@ const VoiceHistory = ({ urls }) => {
 				newPlayers[i].playing = false;
 				setPlayers(newPlayers);
 			});
+			players[i].playing ? source.audio.play() : source.audio.pause();
 		});
 		return () => {
 			sources.forEach((source, i) => {
@@ -98,17 +105,19 @@ const VoiceHistory = ({ urls }) => {
 
 const Player = ({ player, toggle }) => (
 	<HStack width="100%">
-		<HStack
-				width="90%"
-		>
-			<Sentence confidence={player.confidence} sentence_arr={player.sentence_arr} textLoaded={true} />
-		</HStack >
-		<HStack width="10%" >
+		<HStack width="90%">
+			<Sentence
+				confidence={player.confidence}
+				sentence_arr={player.sentence_arr}
+				textLoaded={true}
+			/>
+		</HStack>
+		<HStack width="10%">
 			<Button onClick={toggle}>
 				<Icon
 					w={8}
 					h={8}
-					as={player.playing ? BsFillStopFill : BsFillPlayBtnFill}
+					as={player.playing ? BsFillPauseBtnFill : BsFillPlayBtnFill}
 					color="black"
 				/>
 			</Button>
