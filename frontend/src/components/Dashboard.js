@@ -1,8 +1,25 @@
 import React from 'react'
-import {
-    HStack, VStack, Box, Center, ListItem, UnorderedList
-  } from "@chakra-ui/react"
+import {HStack, VStack, Box, Center, ListItem, UnorderedList} from "@chakra-ui/react"  
 import { useIntl } from 'react-intl'
+
+const axios = require('axios');
+
+function loadWeakWords() {
+  axios({
+      method: 'POST',
+      url: 'http://127.0.0.1:5000/api/weakwords',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+          uid: localStorage.getItem('uid'),
+      }),
+  })
+  .then(function (response) {
+    if(response.status === 200){
+    }
+  })
+  .catch(function (error) {
+  });
+}
 
 const Dashboard = () => {
     /**

@@ -82,7 +82,6 @@ def parse_output(sentence_arr, gcp_output_words, gcp_output_confidence):
 
     return confidence_arr, confidence_levels
 
-
 @app.route("/messages", methods=["POST"])
 @cross_origin()
 def messages():
@@ -133,6 +132,7 @@ def messages():
                 ".", "").strip(',?!')] = word_confidence
         db.child('words').child(user_id).update(data)
     return make_response(jsonify(confidence=arr2, sentence_arr=sentence_arr))
+
 # Api route to get user data
 
 
@@ -141,17 +141,21 @@ def userinfo():
     if (request.form.get('uid', None) and request.form.get('token', None)):
         try:
             auth.current_user = session.get("email", auth.current_user)
-            user = db.child("users").child(
-                request.form['uid']).get(request.form['token'])
-            return jsonify(uid={user.key(): user.val()})
-        except:
-            pass
+            user = db.child("users").child(request.form['uid']).get(request.form['token'])
+            words = db.child("words").child(request.form['uid']).get().val().items()
+            words = list(words)
+            words.sort(key=lambda x: x[1])
+            weakWords, strongWords = [], []
+            if(len(words) >= 10):
+                weakWords = words[:5]
+                strongWords = words[-1:-6:-1]
+            return jsonify(uid={user.key(): user.val()}, weakWords=weakWords, strongWords=strongWords)
+        except Exception as e:
+            print(e)
     # invalid uid or token
     return make_response(jsonify(message='Error cannot retrieve user information'), 400)
 
 # Api route to sign up a new user
-
-
 @app.route('/api/signup', methods=["POST"])
 def signup():
     """
@@ -216,6 +220,24 @@ def random_sentence_generator():
         return jsonify(sentence=ls[random.choice(list(ls))])
     except:
         return make_response(jsonify(message='Cannot fetch a sentence'), 400)
+
+# grab user's recent sentences
+@app.route('/api/recentSentences', methods=["POST"])
+def recent_sentence_grabber():
+    if (request.form.get('uid', None) and request.form.get('token', None)):
+        try:
+            sentences = db.child("voice-data").child(request.form['uid']).get().val().items()
+            sentence_ids = list(sentences)
+            if len(sentences) >= 5:
+                recent_sentence_ids = random.sample(sentence_ids, 5)
+            recent_sentences = []
+            for [id, score] in recent_sentence_ids:
+                recent_sentences.append(ls[id])
+            return make_response(jsonify(recentSentences=recent_sentences))
+        except:
+            return make_response(jsonify(message='Cannot fetch sentences'), 400)
+    # invalid uid
+    return make_response(jsonify(message='Error: cannot retrieve user information'), 400)
 
 
 @app.route('/api/logout', methods=["POST"])
