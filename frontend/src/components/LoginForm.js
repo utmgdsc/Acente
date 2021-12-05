@@ -43,8 +43,6 @@ const LoginForm = ({title}) => {
         localStorage.setItem('uid', response.data['localId']);
         localStorage.setItem('refreshToken', response.data['refreshToken']);
         changeSubmitError('');
-        console.log(localStorage.getItem('uid'));
-        console.log(localStorage.getItem('token'));
         history.push('/dashboard');
       }
       changeSubmitError('Invalid email or password');
