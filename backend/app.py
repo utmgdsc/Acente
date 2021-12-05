@@ -109,7 +109,7 @@ def messages():
             prev = db.child('words').child(user_id).child(sentence_id).get()
             if prev.val():
                 word_confidence = find_avg(prev.val(), word_confidence)
-            data[sentence_arr[i].strip('.')] = word_confidence
+            data[sentence_arr[i].strip('.,?!')] = word_confidence
         db.child('words').child(user_id).update(data)
     return make_response(jsonify(confidence=arr2, sentence_arr=sentence_arr))
 

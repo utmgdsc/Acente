@@ -1,6 +1,7 @@
 import {React, useState}from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from 'react-router-dom';
+import { useIntl } from 'react-intl'
 
 import {
   FormErrorMessage,
@@ -43,7 +44,7 @@ const LoginForm = ({title}) => {
         localStorage.setItem('uid', response.data['localId']);
         localStorage.setItem('refreshToken', response.data['refreshToken']);
         changeSubmitError('');
-        history.push('/dashboard');
+        history.push('dashboard');
       }
       changeSubmitError('Invalid email or password');
     })
@@ -53,7 +54,7 @@ const LoginForm = ({title}) => {
       changeSubmitError('Invalid email or password');
     });
   }
-
+  const { formatMessage } = useIntl();
   return(
   <Box m="auto" width="25%">
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -63,14 +64,14 @@ const LoginForm = ({title}) => {
             ACENTÉ
           </Center>
           <Center fontSize="3xl" color="gray">
-            Login
+            {formatMessage({id: "login"})}
           </Center>
           <Center color='red.500'>
             {isSubmitError}
           </Center>
             <FormControl id="email" isInvalid={errors.email}>
               <FormLabel mb="1px" mt="8px">
-                Email address
+                {formatMessage({id: "email"})}
               </FormLabel>
               <Input
                 name="email"
@@ -81,28 +82,28 @@ const LoginForm = ({title}) => {
                   required: "This is required",
               })}/>
               <FormHelperText mt="1px">
-                We'll never share your email.
+                {formatMessage({id: "emailDisclaimer"})}
               </FormHelperText>
               <FormErrorMessage>
               {errors.email && errors.email.message}
             </FormErrorMessage>
             </FormControl>
             <FormControl id="password"isInvalid={errors.password}>
-              <FormLabel mb="1px">Password</FormLabel>
+              <FormLabel mb="1px">{formatMessage({id: 'password'})}</FormLabel>
               <Input 
                 name="password"
                 borderWidth="2px" 
                 type="password"
                 {...register("password", {
-                  required: "This is required",
-                  minLength: { value: 8, message: "Minimum length should be 8" }
+                  required: formatMessage({id: "required"}),
+                  minLength: { value: 8, message: formatMessage({id: "minimum"}) }
               })}/>
               <FormErrorMessage>
               {errors.password && errors.password.message}
               </FormErrorMessage>
             </FormControl>
         </Flex>
-        <Button colorScheme="gray" type="submit" isLoading={isSubmitting}>Submit</Button>
+        <Button colorScheme="gray" type="submit" isLoading={isSubmitting}>{formatMessage({id: "submit"})}</Button>
       </VStack>
     </form>
   </Box>
