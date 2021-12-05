@@ -53,7 +53,7 @@ POOR = 2
 
 cors = CORS(app)
 # service key required to access google cloud services
-# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "service-account-key.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "../google-credentials.json"
 speech_client = speech.SpeechClient()
 
 
