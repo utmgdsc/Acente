@@ -88,7 +88,7 @@ def messages():
     """
     Function to parse user's words using the GCP model to then generate feedback and metrics.
     """
-    if not(request.form.get('uid', None) and request.form.get('token', None)):
+    if not(request.json.get('uid', None) and request.json.get('token', None)):
         # invalid uid or token
         return make_response(jsonify(message='Error cannot retrieve user information'), 400)
     byte_data = base64.b64decode(request.json['message'])
@@ -106,7 +106,7 @@ def messages():
         config=config_mp3,
         audio=audio_mp3
     )
-    user_id, token = request.form['uid'], request.form['token']
+    user_id, token = request.json['uid'], request.json['token']
     words = []
     confidence = []
     sentence_arr = request.json['sentence'].split(" ")
