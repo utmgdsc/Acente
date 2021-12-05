@@ -25,7 +25,6 @@ const Dashboard = () => {
         .then(function (response) {
             setIsLoading(false);
             if(response.status === 200){
-                console.log("RES", response.data);
                 var strongWords = [];
                 var weakWords = [];
                 var recentSentences = [];
