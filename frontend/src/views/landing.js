@@ -10,17 +10,20 @@ import {
 	Text,
 	Image,
 } from "@chakra-ui/react";
+import { useIntl } from "react-intl";
 export const landing = (props) => {
 	/**
 	 * This component is the main page for visitors and has different views based on user's authentication.
 	 */
 	let history = props.history;
 	const handleSignUpClick = () => {
-		history.push("/signup");
+		history.push("signup");
 	};
 	const handlePracticeClick = () => {
-		history.push("/practice");
+		history.push("practice");
 	};
+
+	const { formatMessage } = useIntl();
 	return (
 		<div>
 			<NavBar
@@ -47,7 +50,7 @@ export const landing = (props) => {
 				>
 					{/* <Practice /> and remove img */}
 					<Image
-						src="background.png"
+						src="/background.png"
 						size="100%"
 						rounded="1rem"
 						shadow="2xl"
@@ -76,14 +79,10 @@ export const landing = (props) => {
 						lineHeight={1.5}
 						textAlign={["center", "center", "left", "left"]}
 					>
-						{"Your personalized voice coach"}
+						{formatMessage({id: "headline"})}
 					</Heading>
 					<Text>
-						Acente is a speech coach designed for your voice, to
-						make learning accents a whole lot easier. <br />
-						We have customized accent profiles tailored to targeting
-						your weak spots and allow for a personalized learning
-						experience to suit your language needs
+						{formatMessage({id: "description"})}
 					</Text>
 					{localStorage.getItem("uid") ? (
 						<Button
@@ -94,7 +93,7 @@ export const landing = (props) => {
 							px="4"
 							size="md"
 						>
-							{"Start practicing now"}
+							{formatMessage({id: "practice"})}
 						</Button>
 					) : (
 						<Button
@@ -106,7 +105,7 @@ export const landing = (props) => {
 							lineHeight="1"
 							size="md"
 						>
-							{"Create your account now"}
+							{formatMessage({id: "create"})}
 						</Button>
 					)}
 					{localStorage.getItem("uid") ? (
@@ -119,7 +118,7 @@ export const landing = (props) => {
 							color="primary.800"
 							opacity="0.6"
 						>
-							No credit card required.
+							{formatMessage({id: "credit"})}
 						</Text>
 					)}
 				</Stack>
@@ -129,4 +128,4 @@ export const landing = (props) => {
 	);
 };
 
-export default landing;
+export default Landing;

@@ -20,6 +20,8 @@ import {GiNotebook} from "react-icons/gi"
 import {CgProfile} from "react-icons/cg"
 import {BiLogOut} from "react-icons/bi"
 import {HiMicrophone} from "react-icons/hi"
+import { useIntl } from 'react-intl';
+import { LanguageSwitcher } from '../i18n/components/LanguageSwitcher';
 const axios = require('axios');
 
 const NavBar = ({type}) => {
@@ -29,46 +31,48 @@ const NavBar = ({type}) => {
 	 */
     let history = useHistory();
 
+    const { locale, formatMessage }  = useIntl();
+
     /**
 	 * Navigate User to Signup page
 	 */
     const handleSignUpClick = () => {  
-        history.push('/signup');
+        history.push('signup');
     } 
 
     /**
 	 * Navigate User to Landing Page
 	 */
     const handleMainPageClick = () => {
-        history.push('/');
+        history.push(`/${locale}/`);
     }
 
     /**
 	 * Navigate User to Login Page
 	 */
     const handleLoginClick = () => {
-        history.push('/login');
+        history.push('login');
     }
 
     /**
 	 * Navigate User to Practice
 	 */
     const handlePracticeClick = () => {
-        history.push('/practice')
+        history.push('practice')
     }
 
     /**
 	 * Navigate User to Profile Page
 	 */
     const handleProfileClick = () => {
-        history.push('/dashboard')
+        history.push('dashboard')
     }
 
     /**
 	 * Navigate User to Sandbox Page
 	 */
     const handleSandboxClick = () => {
-        history.push('/sandbox')
+        history.push('sandbox')
     }
 
     const handleLogoutClick = () => {
@@ -81,7 +85,7 @@ const NavBar = ({type}) => {
             localStorage.removeItem('token');
             localStorage.removeItem('refreshToken');
         }
-        history.push('/login');
+        history.push('login');
     }
         
     if (type === "loginMenu") {
@@ -89,15 +93,16 @@ const NavBar = ({type}) => {
         return (
             <HStack spacing="20px" backgroundColor="#9AE6B4" height="7vh" paddingRight="20px" paddingLeft="20px" width="100%">
                 <HStack justifyContent="flex-start" width="50%">
-                    <IconButton colorScheme="green" onClick={handleMainPageClick} aria-label="Acente Logo" backgroundColor="#9AE6B4" icon={<Img maxWidth="100%" maxHeight="100%" src="AcenteIcon.png"/>}/>
+                    <IconButton colorScheme="green" onClick={handleMainPageClick} aria-label="Acente Logo" backgroundColor="#9AE6B4" icon={<Img maxWidth="100%" maxHeight="100%" src="/AcenteIcon.png"/>}/>
                 </HStack>
 
                 <HStack justifyContent="flex-end" width="50%">
+                    <LanguageSwitcher/>
                     <Button colorScheme="green" variant="outline" onClick={handleLoginClick}>
-                        Login
+                        {formatMessage({id: "login"})}
                     </Button>
                     <Button colorScheme="green" variant="outline" onClick={handleSignUpClick}>
-                        Sign Up
+                    {formatMessage({id: "signup"})}
                     </Button>
                 </HStack>
             </HStack>
@@ -108,10 +113,11 @@ const NavBar = ({type}) => {
         return (
             <HStack spacing="20px" backgroundColor="#9AE6B4" height="7vh" paddingRight="20px" paddingLeft="20px" width="100%">
                 <HStack justifyContent="flex-start" width="50%">
-                    <IconButton colorScheme="green" onClick={handleMainPageClick} aria-label="Acente Logo" backgroundColor="#9AE6B4" icon={<Img maxWidth="100%" maxHeight="100%" src="AcenteIcon.png"/>}/>
+                    <IconButton colorScheme="green" onClick={handleMainPageClick} aria-label="Acente Logo" backgroundColor="#9AE6B4" icon={<Img maxWidth="100%" maxHeight="100%" src="/AcenteIcon.png"/>}/>
                 </HStack>
 
                 <HStack justifyContent="flex-end" width="50%">
+                    <LanguageSwitcher/>
                     <Menu>
                         <MenuButton
                             as={IconButton}
@@ -121,19 +127,19 @@ const NavBar = ({type}) => {
                         />
                         <MenuList minHeight="100vh" minWidth="35vh" right="-60px" position="absolute" top="-57px" backgroundColor="#2D3748">
                             <MenuItem minHeight="13vh" icon={<CgProfile />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handleProfileClick}>
-                                Profile
+                                {formatMessage({id: "profile"})}
                             </MenuItem>
                             <MenuDivider/>
                             <MenuItem minHeight="13vh" icon={<HiMicrophone />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handlePracticeClick}>
-                            Practice
+                            {formatMessage({id: "practiceHeading"})}
                             </MenuItem>
                             <MenuDivider/>
                             <MenuItem minHeight="13vh" icon={<GiNotebook />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handleSandboxClick}>
-                            Sandbox
+                            {formatMessage({id: "sandBox"})}
                             </MenuItem>
                             <MenuDivider/>
                             <MenuItem minHeight="13vh" icon={<BiLogOut />} fontSize="2xl" color="white" _focus={{backgroundColor:"#4A5568"}} onClick={handleLogoutClick}>
-                            Logout
+                            {formatMessage({id: "logout"})}
                             </MenuItem>
                             <MenuDivider/>
                             <MenuItem fontSize="180px" color="white" _focus={{backgroundColor:"#2D3748"}} paddingLeft="75px">
