@@ -24,8 +24,6 @@ import VoiceHistory from "../components/VoiceHistory";
 let recorder;
 let audio;
 
-const axios = require("axios");
-
 const recordAudio = () =>
 	/**
 	 * This component provides functionality for recording, stopping, playing and saving audio
@@ -148,7 +146,7 @@ const Sandbox = () => {
 		reader.onload = () => {
 			setTextLoaded(false);
 			const base64AudioMessage = reader.result.split(",")[1];
-			fetch("http://127.0.0.1:5000/messages", {
+			fetch(`${process.env.REACT_APP_BACKEND_URL}/messages`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

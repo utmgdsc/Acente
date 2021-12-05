@@ -1,6 +1,6 @@
 import {useEffect, useState, React} from 'react'
 import {
-    HStack, VStack, Box, Center, ListItem, UnorderedList, Layout} from "@chakra-ui/react"
+    HStack, VStack, Box, Center, ListItem, UnorderedList} from "@chakra-ui/react"
 import axios from "axios"
 import { useIntl } from 'react-intl';
 const Dashboard = () => {
@@ -18,7 +18,7 @@ const Dashboard = () => {
         bodyFormData.append('token', localStorage.getItem('token'));
         axios({
             method: 'POST',
-            url: 'http://127.0.0.1:5000/api/userinfo',
+            url: `${process.env.REACT_APP_BACKEND_URL}/api/userinfo`,
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" },
         })

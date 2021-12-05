@@ -34,7 +34,7 @@ const LoginForm = ({title}) => {
     bodyFormData.append('password', values["password"]);
     axios({
       method: 'POST',
-      url: 'http://127.0.0.1:5000/api/login',
+      url: `${process.env.REACT_APP_BACKEND_URL}/api/login`,
       data: bodyFormData,
       headers: { "Content-Type": "multipart/form-data" },
     })

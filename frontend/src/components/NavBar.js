@@ -79,7 +79,7 @@ const NavBar = ({type}) => {
         if (localStorage.getItem('uid')){
             axios({
                 method: 'POST',
-                url: 'http://127.0.0.1:5000/api/logout'
+                url: `${process.env.REACT_APP_BACKEND_URL}/api/logout`
               });
             localStorage.removeItem('uid');
             localStorage.removeItem('token');
