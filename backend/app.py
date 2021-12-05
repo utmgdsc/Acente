@@ -200,7 +200,6 @@ for sentence in sentences_ref:
     dt = sentence.to_dict()
     dt['id'] = sentence.id
     ls[sentence.id] = dt
-print(ls)
 
 
 @app.route('/api/randomSentenceGenerator', methods=["GET"])
