@@ -129,7 +129,9 @@ def userinfo():
             if(len(words) >= 10):
                 weakWords = words[:5]
                 strongWords = words[-1:-6:-1]
-            return jsonify(uid={user.key(): user.val()}, weakWords=weakWords, strongWords=strongWords)
+            recentSentences = recent_sentence_grabber(request.form['uid'])
+            return jsonify(uid={user.key(): user.val()}, weakWords=weakWords, 
+                           strongWords=strongWords, recentSentences=recentSentences)
         except Exception as e:
             print(e)
     # invalid uid or token
@@ -213,22 +215,18 @@ def random_sentence_generator():
         return make_response(jsonify(message='Cannot fetch a sentence'), 400)
 
 # grab user's recent sentences
-@app.route('/api/recentSentences', methods=["POST"])
-def recent_sentence_grabber():
-    if (request.form.get('uid', None) and request.form.get('token', None)):
-        try:
-            sentences = db.child("voice-data").child(request.form['uid']).get().val().items()
-            sentence_ids = list(sentences)
-            if len(sentences) >= 5:
-                recent_sentence_ids = random.sample(sentence_ids, 5)
-            recent_sentences = []
-            for [id, score] in recent_sentence_ids:
-                recent_sentences.append(ls[id])
-            return make_response(jsonify(recentSentences=recent_sentences))
-        except:
-            return make_response(jsonify(message='Cannot fetch sentences'), 400)
-    # invalid uid
-    return make_response(jsonify(message='Error: cannot retrieve user information'), 400)
+# helper function for user_info()
+def recent_sentence_grabber(uid):
+    sentences = db.child("voice-data").child(uid).get().val().items()
+    sentence_ids = list(sentences)
+    if len(sentences) >= 5:
+        recent_sentence_ids = random.sample(sentence_ids, 5)
+    recent_sentences = []
+    for [id, score] in recent_sentence_ids:
+        recent_sentences.append(ls[id])
+    print(recent_sentences)
+    return recent_sentences
+
 
 
 @app.route('/api/logout', methods=["POST"])
