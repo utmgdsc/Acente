@@ -143,16 +143,21 @@ def userinfo():
     if (request.form.get('uid', None) and request.form.get('token', None)):
         try:
             auth.current_user = session.get("email", auth.current_user)
-            user = db.child("users").child(
-                request.form['uid']).get(request.form['token'])
-            words = db.child("words").child(
-                request.form['uid']).get().val().items()
-            words = list(words)
-            words.sort(key=lambda x: x[1])
-            weakWords, strongWords = [], []
-            if(len(words) >= 10):
-                weakWords = words[:5]
-                strongWords = words[-1:-6:-1]
+            try:
+
+                user = db.child("users").child(
+                    request.form['uid']).get(request.form['token'])
+                words = db.child("words").child(
+                    request.form['uid']).get().val().items()
+                words = [x[0] for x in sorted(list(words), key=lambda x: x[1])]
+                if(len(words) >= 10):
+                    weakWords = words[:5]
+                    strongWords = words[-1:-6:-1]
+                else:
+                    raise Exception
+            except:
+                strongWords = ["practice", "more", "words", "to", "see"]
+                weakWords = ["personalized", "metrics", "data", "displayed", "here"]
             recentSentences = recent_sentence_grabber(request.form['uid'])
             return jsonify(uid={user.key(): user.val()}, weakWords=weakWords,
                            strongWords=strongWords, recentSentences=recentSentences)
@@ -234,12 +239,19 @@ def recent_sentence_grabber(uid):
     """
     Helper function for user_info to grab user's recent sentences
     """
-    sentences = db.child("voice-data").child(uid).get().val().items()
-    sentence_ids = list(sentences)
-    if len(sentences) >= 5:
-        recent_sentence_ids = random.sample(sentence_ids, 5)
-    recent_sentences = []
-    for [id, score] in recent_sentence_ids:
+    try:
+        sentences = db.child("voice-data").child(uid).get().val().items()
+        sentence_ids = [x[0] for x in sentences]
+        if len(sentences) >= 5:
+            recent_sentence_ids = random.sample(sentence_ids, 5)
+            recent_sentences = []
+        else:
+            raise Exception
+    except:
+        recent_sentence_ids = random.sample(list(ls), 4)
+        recent_sentences = [{"id": 0, "sentence":"Practice more to see tailored sentences below"}]
+
+    for id in recent_sentence_ids:
         recent_sentences.append(ls[id])
     return recent_sentences
 

@@ -2,7 +2,7 @@ import {useEffect, useState, React} from 'react'
 import {
     HStack, VStack, Box, Center, ListItem, UnorderedList, Layout} from "@chakra-ui/react"
 import axios from "axios"
-
+import { useIntl } from 'react-intl';
 const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [strongWords, setStrongWords] = useState([]);
@@ -11,7 +11,7 @@ const Dashboard = () => {
     useEffect(() => {
         getData();
     }, [])
-
+    const { formatMessage } = useIntl();
     const getData = () => {
         let bodyFormData = new FormData();
         bodyFormData.append('uid', localStorage.getItem('uid'));
@@ -27,24 +27,17 @@ const Dashboard = () => {
             if(response.status === 200){
                 const result = await response;
                 const { strongWords: resStrongWords, weakWords: resWeakWorks, recentSentences: resRecent } = result.data;
-                var strongWords = [];
-                var weakWords = [];
                 var recentSentences = [];
-                for(let i = 0; i < resStrongWords.length; i++){
-                    strongWords.push(resStrongWords[i][0])
-                    weakWords.push(resWeakWorks[i][0])
-                }
                 for(let i = 0; i < resRecent.length; i++){
                     recentSentences.push(resRecent[i].sentence)
                 }
-                setStrongWords(strongWords);
-                setWeakWords(weakWords);
+                setStrongWords(resStrongWords);
+                setWeakWords(resWeakWorks);
                 setRecentSentences(recentSentences);
             }
         })
         .catch(function (error) {
             setIsLoading(false);
-            console.log("An error happened",error);
         });
     }
     const content = isLoading ? <div>Loading...</div> : <div>Data ...</div>
