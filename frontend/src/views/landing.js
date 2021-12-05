@@ -11,10 +11,7 @@ import {
 	Image,
 } from "@chakra-ui/react";
 import { useIntl } from "react-intl";
-const landing = (props) => {
-	/**
-	 * This component is the main page for visitors and has different views based on user's authentication.
-	 */
+const Landing = (props) => {
 	let history = props.history;
 	const handleSignUpClick = () => {
 		history.push("signup");
@@ -128,4 +125,4 @@ const landing = (props) => {
 	);
 };
 
-export default landing;
+export default Landing;

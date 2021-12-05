@@ -3,7 +3,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { Route, Redirect } from "react-router-dom";
 import { LanguageRouter } from "./i18n/components/LanguageRouter";
 import { LocalizedSwitch } from "./i18n/components/LocalizedSwitch";
-import landing from "./views/landing";
+import Landing from "./views/landing";
 import login from "./views/login";
 import signup from "./views/signup";
 import dashboard from "./views/dashboard";
@@ -15,7 +15,7 @@ function App() {
 		<ChakraProvider>
 				<LanguageRouter>
 				<LocalizedSwitch>
-						<Route exact path="/" component={landing} />
+						<Route exact path="/" component={Landing} />
 						<Route exact path="/signup" component={signup} />
 						<Route exact path="/login" component={login} />
           {localStorage.getItem("uid") &&
