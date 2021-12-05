@@ -11,7 +11,7 @@ import {
 	Image,
 } from "@chakra-ui/react";
 import { useIntl } from "react-intl";
-export const landing = (props) => {
+const landing = (props) => {
 	/**
 	 * This component is the main page for visitors and has different views based on user's authentication.
 	 */
@@ -128,4 +128,4 @@ export const landing = (props) => {
 	);
 };
 
-export default Landing;
+export default landing;
