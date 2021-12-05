@@ -11,7 +11,7 @@ import {
 	Image,
 } from "@chakra-ui/react";
 import { useIntl } from "react-intl";
-export const Landing = (props) => {
+const Landing = (props) => {
 	let history = props.history;
 	const handleSignUpClick = () => {
 		history.push("signup");
