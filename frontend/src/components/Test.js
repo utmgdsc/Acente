@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { HStack, VStack, Box, Center, Icon, Button } from "@chakra-ui/react";
-
+import { useSpeechSynthesis } from "react-speech-kit";
 import { HiMicrophone, HiRefresh } from "react-icons/hi";
-import { BsFillStopFill, BsFillPlayBtnFill } from "react-icons/bs";
+import {
+	BsFillStopFill,
+	BsFillPlayBtnFill,
+	BsFillVolumeUpFill,
+} from "react-icons/bs";
 import Sentence from "../components/Sentence";
 import VoiceHistory from "../components/VoiceHistory";
 
@@ -64,7 +68,7 @@ const Test = () => {
 	const [confidence, setConfidence] = useState([]);
 	const [sentence_arr, setSentenceArr] = useState([]);
 	const [audioUrls, setAudioUrls] = useState([]);
-
+	const { speak } = useSpeechSynthesis();
 	useEffect(() => {
 		// On load, grab a randomized sentence from the database
 		axios({
@@ -134,7 +138,7 @@ const Test = () => {
 					uid: localStorage.getItem("uid"),
 					token: localStorage.getItem("token"),
 					message: base64AudioMessage,
-					...sentence
+					...sentence,
 				}),
 			}).then((res) => {
 				if (res.status === 200) {
@@ -197,16 +201,12 @@ const Test = () => {
 							height="70px"
 							width="70px"
 							backgroundColor="#CBD5E0"
-							style={{
-								display:
-									disablePlayBtn && audio ? "block" : "none",
-							}}
-							onClick={handlePlayButtonClick}
+							onClick={() => speak({ text: sentence.sentence })}
 						>
 							<Icon
 								w={8}
 								h={8}
-								as={BsFillPlayBtnFill}
+								as={BsFillVolumeUpFill}
 								color="black"
 							/>
 						</Button>
@@ -257,12 +257,39 @@ const Test = () => {
 					backgroundColor="#EDF2F7"
 					borderRadius="3xl"
 					padding="20px"
+					position="relative"
 				>
 					<Sentence
 						confidence={confidence}
 						sentence_arr={sentence_arr}
 						textLoaded={textLoaded}
 					/>
+					<HStack
+						spacing={4}
+						align="right"
+						position="absolute"
+						bottom="20px"
+						right="20px"
+					>
+						<Button
+							borderRadius="full"
+							height="70px"
+							width="70px"
+							backgroundColor="#CBD5E0"
+							style={{
+								display:
+									disablePlayBtn && audio ? "block" : "none",
+							}}
+							onClick={handlePlayButtonClick}
+						>
+							<Icon
+								w={8}
+								h={8}
+								as={BsFillPlayBtnFill}
+								color="black"
+							/>
+						</Button>
+					</HStack>
 				</Box>
 			</VStack>
 			<VStack height="100%" width="30%">
