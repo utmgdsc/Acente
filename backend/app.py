@@ -26,11 +26,26 @@ Session(app)
 # # #Enable CORs
 cors = CORS(app)
 
-# Connect to firebase
+# Connect to Firebase Realtime DB
 firebase = pyrebase.initialize_app(json.load(open('secrets.json')))
 auth = firebase.auth()
 # Authenticate Firebase tables
 db = firebase.database()
+
+# Firestore Setup
+# Use a service account
+cred = credentials.Certificate('fireStoreKey.json')
+firebase_admin.initialize_app(cred)
+firestore_db = firestore.client()
+
+# create dict of sentences by streaming the firestore db
+ls = {}
+sentences_ref = firestore_db.collection(u'sentences').stream()
+for sentence in sentences_ref:
+    dt = sentence.to_dict()
+    dt['id'] = sentence.id
+    ls[sentence.id] = dt
+
 
 PERFECT = 0
 ALMOST_THERE = 1
@@ -71,6 +86,9 @@ def parse_output(sentence_arr, gcp_output_words, gcp_output_confidence):
 @app.route("/messages", methods=["POST"])
 @cross_origin()
 def messages():
+    """
+    Function to parse user's words using the GCP model to then generate feedback and metrics.
+    """
     byte_data = base64.b64decode(request.json['message'])
     audio_mp3 = speech.RecognitionAudio(content=byte_data)
     config_mp3 = speech.RecognitionConfig(
@@ -99,7 +117,7 @@ def messages():
             confidence.append(pair.confidence)
     arr1, arr2 = parse_output(sentence_arr, words, confidence)
     if not request.json.get('sandbox', None):
-        def find_avg(x, y): 
+        def find_avg(x, y):  # Weighted average for user's progress
             return (x*5+y*2)/7
         prev = db.child('voice-data').child(user_id).child(sentence_id).get()
         if prev.val():
@@ -111,7 +129,8 @@ def messages():
             prev = db.child('words').child(user_id).child(sentence_id).get()
             if prev.val():
                 word_confidence = find_avg(prev.val(), word_confidence)
-            data[sentence_arr[i].replace(".", "").strip(',?!')] = word_confidence
+            data[sentence_arr[i].replace(
+                ".", "").strip(',?!')] = word_confidence
         db.child('words').child(user_id).update(data)
     return make_response(jsonify(confidence=arr2, sentence_arr=sentence_arr))
 # Api route to get user data
@@ -135,6 +154,9 @@ def userinfo():
 
 @app.route('/api/signup', methods=["POST"])
 def signup():
+    """
+    Function to create a new user account that returns the user_id and tokens 
+    """
     data = {
         "email": request.form.get('email'),
         "name": request.form.get('name', ""),
@@ -153,11 +175,12 @@ def signup():
     except:
         return make_response(jsonify(message='Error creating user'), 401)
 
-# Api to refresh user token (Note token expire every hour)
-
 
 @app.route('/api/login', methods=["POST"])
 def login():
+    """
+    Function to authenticate an existing user that returns user_id and tokens
+    """
     email = request.form.get('email')
     password = request.form.get('password')
     try:
@@ -167,11 +190,12 @@ def login():
     except:
         return make_response(jsonify(message='Error authenticating user'), 401)
 
-# take refresh token and get new token
-
 
 @app.route('/api/token', methods=["POST"])
 def token():
+    """
+    Function to refresh user token (Note token expire every hour)
+    """
     if request.form.get('refreshToken', None):
         try:  # Review sign_in_with_custom_token(self, token) function
             auth.current_user = session.setdefault("email", auth.current_user)
@@ -183,25 +207,10 @@ def token():
     return make_response(jsonify(message='Error invalid refresh token'), 400)
 
 
-# Firestore Setup
-
-# Use a service account
-cred = credentials.Certificate('fireStoreKey.json')
-firebase_admin.initialize_app(cred)
-firestore_db = firestore.client()
-
-# create dict of sentences
-ls = {}
-sentences_ref = firestore_db.collection(u'sentences').stream()
-for sentence in sentences_ref:
-    dt = sentence.to_dict()
-    dt['id'] = sentence.id
-    ls[sentence.id] = dt
-
-
 @app.route('/api/randomSentenceGenerator', methods=["GET"])
 def random_sentence_generator():
-    """ Returns a random senctence from collection of sentences
+    """ 
+    Returns a random senctence from collection of sentences
     """
     try:
         return jsonify(sentence=ls[random.choice(list(ls))])
@@ -211,6 +220,9 @@ def random_sentence_generator():
 
 @app.route('/api/logout', methods=["POST"])
 def logout():
+    """
+    Function to log out an user by removing flask session
+    """
     if session.get("email"):
         session.pop("email", None)
     auth.current_user = None
