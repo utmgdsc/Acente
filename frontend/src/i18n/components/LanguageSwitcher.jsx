@@ -6,12 +6,14 @@ import { useIntl } from 'react-intl';
 
 const AppLanguage = {
   English: 'en',
-  French: 'fr'
+  Français: 'fr',
+  繁體中文: 'ch'
 };
 
 const Mapping = {
   'en': 'English',
-  'fr': 'French'
+  'fr': 'Français',
+  'ch': '繁體中文'
 }
 
 export const LanguageSwitcher = () => {

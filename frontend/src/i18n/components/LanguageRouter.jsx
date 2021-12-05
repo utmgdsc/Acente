@@ -5,7 +5,8 @@ import { Route, Redirect, BrowserRouter } from 'react-router-dom';
 
 const AppLanguage = {
   English: 'en',
-  French: 'fr'
+  French: 'fr',
+  Chinese: 'ch'
 };
 
 export const LanguageRouter = ({
