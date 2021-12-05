@@ -1,14 +1,7 @@
 import React from 'react';
 import { IntlProvider } from 'react-intl';
-import appStrings from '../languages';
+import appStrings, { AppLanguage } from '../languages';
 import { Route, Redirect, BrowserRouter } from 'react-router-dom';
-
-const AppLanguage = {
-  English: 'en',
-  French: 'fr',
-  繁體中文: 'ch'
-};
-
 export const LanguageRouter = ({
   children
 }) => (<BrowserRouter>

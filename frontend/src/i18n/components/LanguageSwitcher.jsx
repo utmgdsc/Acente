@@ -2,19 +2,7 @@ import React from 'react';
 import { Menu, MenuButton, MenuList, MenuItem, Button} from '@chakra-ui/react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useIntl } from 'react-intl';
-
-
-const AppLanguage = {
-  English: 'en',
-  Français: 'fr',
-  繁體中文: 'ch'
-};
-
-const Mapping = {
-  'en': 'English',
-  'fr': 'Français',
-  'ch': '繁體中文'
-}
+import { Mapping, AppLanguage } from '../languages'
 
 export const LanguageSwitcher = () => {
   const { pathname } = useLocation();
