@@ -69,7 +69,7 @@ const Test = () => {
 		// On load, grab a randomized sentence from the database
 		axios({
 			method: "GET",
-			url: "http://127.0.0.1:5000/api/randomSentenceGenerator",
+			url: `${process.env.REACT_APP_BACKEND_URL}/api/randomSentenceGenerator`,
 		}).then(function (response) {
 			if (response.status === 200) {
 				setSentence(response.data.sentence);
@@ -81,7 +81,7 @@ const Test = () => {
 		// Refresh button grabs a new sentence from the database
 		axios({
 			method: "GET",
-			url: "http://127.0.0.1:5000/api/randomSentenceGenerator",
+			url: `${process.env.REACT_APP_BACKEND_URL}/api/randomSentenceGenerator`,
 		}).then(function (response) {
 			if (response.status === 200) {
 				setSentence(response.data.sentence);
@@ -127,7 +127,7 @@ const Test = () => {
 		reader.onload = () => {
 			setTextLoaded(false);
 			const base64AudioMessage = reader.result.split(",")[1];
-			fetch("http://127.0.0.1:5000/messages", {
+			fetch(`${process.env.REACT_APP_BACKEND_URL}/messages`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({

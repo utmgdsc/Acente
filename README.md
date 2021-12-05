@@ -26,3 +26,13 @@ The backend code can be found in `backend/` and the frontend code can be found i
 - NavBar.js: Adaptive Navigation bar displays login and sign-up buttons if user has not logged in. After authentication, it displays the burger menu.
 - Sandbox.js: User can create and practice on custom sentences.
 - Test.js: User can practice on predefined sentences.
+
+## Secrets
+### Backend
+The backend requires 3 keys:
+- fireStoreKey.json, a GCP key to the FireStore database
+- service-key-account.json, a GCP service account key
+
+### Frontend
+The frontend has an .env file with:
+- REACT_APP_BACKEND_URL, the url to the backend
