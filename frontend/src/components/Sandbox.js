@@ -151,9 +151,10 @@ const Sandbox = () => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					uid: localStorage.getItem("uid"),
+					token: localStorage.getItem("token"),
 					message: base64AudioMessage,
 					...sentence,
-					sandbox: true,
+					sandbox: true
 				}),
 			}).then((res) => {
 				if (res.status === 200) {
