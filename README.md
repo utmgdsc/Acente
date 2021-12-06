@@ -32,6 +32,7 @@ The backend code can be found in `backend/` and the frontend code can be found i
 The backend requires 3 keys:
 - fireStoreKey.json, a GCP key to the FireStore database
 - service-key-account.json, a GCP service account key
+- secrets.json, a GCP key to the real time Firebase database
 
 ### Frontend
 The frontend has an .env file with:
