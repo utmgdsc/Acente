@@ -65,7 +65,7 @@ const Landing = (props) => {
 						color="primary.800"
 						textAlign={["center", "center", "left", "left"]}
 					>
-						{"Acente"}
+						{"Acenté"}
 					</Heading>
 					<Heading
 						as="h2"
