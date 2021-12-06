@@ -8,7 +8,7 @@ from datetime import timedelta
 import firebase_admin
 import pyrebase
 from firebase_admin import credentials, firestore
-from flask import Flask, jsonify, make_response, request, session
+from flask import Flask, jsonify, make_response, request, session, redirect
 from flask_cors import CORS, cross_origin
 from google.cloud import speech_v1p1beta1 as speech
 
@@ -134,6 +134,12 @@ def messages():
         db.child('words').child(user_id).update(data, token)
     return make_response(jsonify(confidence=arr2, sentence_arr=sentence_arr))
 
+@app.route("/", methods=["GET"])
+def index():
+    """
+    Redirect to frontend for better user experience
+    """
+    return redirect("https://acente-d5371.web.app/", code=302)
 
 @app.route('/api/userinfo', methods=["POST"])
 def userinfo():
